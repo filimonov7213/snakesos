@@ -12,14 +12,16 @@ include_directories(${CURSES_INCLUDE_DIR})
 # Includi le tue librerie personalizzate
 include_directories(libraries)
 
-# File sorgentimjj
+# File sorgenti
 file(GLOB_RECURSE SOURCES
         "sources/*.cpp"
         "libraries/*.cpp"
 )
 
 # Crea eseguibile
-add_executable(SnakeGame ${SOURCES})
+add_executable(SnakeGame ${SOURCES}
+        libraries/menu.h
+        libraries/menu.cpp)
 
 # Collega la libreria ncurses
 target_link_libraries(SnakeGame ${CURSES_LIBRARIES})
