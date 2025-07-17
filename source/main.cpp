@@ -3,7 +3,11 @@
 
 int main() {
   // todo: roba di curses
-  // ...
+  initscr();            // inizializza lo schermo
+  noecho();             // non mostra i tasti premuti
+  cbreak();             // leggi i tasti subito, senza invio
+  curs_set(0);          // nascondi cursore
+  keypad(stdscr, TRUE); // abilita tasti speciali
 
   // implementazione menu
   Menu menu;
