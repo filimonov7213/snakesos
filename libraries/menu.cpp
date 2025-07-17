@@ -2,7 +2,7 @@
 // Created by victor on 17/07/2025.
 //
 
-#include "Menu.h"
+#include "menu.h"
 #include <curses.h>
 
 Menu::Menu() {
@@ -11,7 +11,7 @@ Menu::Menu() {
     selectedIndex = 0;
 }
 
-void Menu::display() {
+void Menu::display() const{
   clear();
   mvprintw(1, 5, "==== MENU ====");
     for (int i = 0; i < N_OPTIONS; ++i) {
@@ -32,12 +32,12 @@ int Menu::gestisciInput() {
         case KEY_UP:
         case 'w':
         case 'W':
-            selectedIndex = (selectedIndex - 1 + NUM_OPTIONS) % NUM_OPTIONS; // trucchetto per scorrere in alto ciclicamente, cioè se sei in cima al menu, torni all’ultima LOOP CIRCOLARE
+            selectedIndex = (selectedIndex - 1 + N_OPTIONS) % N_OPTIONS; // trucchetto per scorrere in alto ciclicamente, cioè se sei in cima al menu, torni all’ultima LOOP CIRCOLARE
         break;
         case KEY_DOWN:
         case 's':
         case 'S':
-            selectedIndex = (selectedIndex + 1) % NUM_OPTIONS; // trucchetto per scorrere in alto ciclicamente, cioè se sei in cima al menu, torni all’ultima LOOP CIRCOLARE
+            selectedIndex = (selectedIndex + 1) % N_OPTIONS; // trucchetto per scorrere in alto ciclicamente, cioè se sei in cima al menu, torni all’ultima LOOP CIRCOLARE
         break;
         case '\n': // Invio
         case KEY_ENTER:

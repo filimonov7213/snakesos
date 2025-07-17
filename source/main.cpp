@@ -1,5 +1,5 @@
 #include <curses.h>
-#include "../libraries/Menu.hpp"
+#include "../libraries/menu.h"
 
 int main() {
   // todo: roba di curses
@@ -15,7 +15,7 @@ int main() {
 
   while (choice == -1) {
     menu.display();
-    choice = menu.handleInput();
+    choice = menu.gestisciInput();
   }
 
   switch (choice) {

@@ -11,7 +11,7 @@
 class Menu {
 private:
     static const int N_OPTIONS = 2;
-    string options[N_OPTIONS];
+    std::string options[N_OPTIONS];
     int selectedIndex;
 
 public:
