@@ -21,6 +21,7 @@ int main() {
   switch (choice) {
     case 0:
       printw("Hai scelto: Nuova partita\n");
+      // todo fai game
     break;
     case 1:
       printw("Hai scelto: Visualizza classifica\n");
