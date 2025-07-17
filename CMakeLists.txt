@@ -12,7 +12,7 @@ include_directories(${CURSES_INCLUDE_DIR})
 # Includi le tue librerie personalizzate
 include_directories(libraries)
 
-# File sorgenti
+# File sorgentimjj
 file(GLOB_RECURSE SOURCES
         "sources/*.cpp"
         "libraries/*.cpp"
