@@ -21,7 +21,10 @@ file(GLOB_RECURSE SOURCES
 # Crea eseguibile
 add_executable(SnakeGame ${SOURCES}
         libraries/menu.h
-        libraries/menu.cpp)
+        libraries/menu.cpp
+        libraries/game.cpp
+        libraries/livello.h
+        libraries/livello.cpp)
 
 # Collega la libreria ncurses
 target_link_libraries(SnakeGame ${CURSES_LIBRARIES})

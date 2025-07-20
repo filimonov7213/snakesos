@@ -1,5 +1,6 @@
 #include <curses.h>
 #include "../libraries/menu.h"
+#include "../libraries/game.h"
 
 int main() {
   // todo: roba di curses
@@ -21,7 +22,11 @@ int main() {
   switch (choice) {
     case 0:
       printw("Hai scelto: Nuova partita\n");
-      // todo fai game
+    // game
+      initscr();
+      Game game;
+      game.start();
+      endwin();
     break;
     case 1:
       printw("Hai scelto: Visualizza classifica\n");
