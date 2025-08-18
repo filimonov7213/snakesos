@@ -34,7 +34,7 @@ int main() {
   }
 }*/
 
-#include "../libraries/Game.hpp"
+#include "../libraries/game.h"
 
 int main() {
   Game gioco;

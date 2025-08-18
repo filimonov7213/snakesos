@@ -1,6 +1,6 @@
 #pragma once
-#include "Livello.hpp"
-#include "snakegame.h" 
+#include "livello.h"
+#include "snakegame.h"
 
 class Game {
 public:

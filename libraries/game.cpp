@@ -1,5 +1,5 @@
-#include "Game.hpp"
-#include <ncurses.h>
+#include "game.h"
+#include <curses.h>
 
 Game::Game() {
     running = true;
