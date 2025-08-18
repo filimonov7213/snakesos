@@ -1,6 +1,6 @@
-#include <curses.h>
-#include "../libraries/menu.h"
-#include "../libraries/game.h"
+/*#include "../libraries/board.h"
+#include "../libraries/snakegame.h"
+#include "../libraries/drawable.h"
 
 int main() {
   // todo: roba di curses
@@ -32,4 +32,12 @@ int main() {
       printw("Hai scelto: Visualizza classifica\n");
     break;
   }
+}*/
+
+#include "../libraries/Game.hpp"
+
+int main() {
+  Game gioco;
+  gioco.start();
+  return 0;
 }

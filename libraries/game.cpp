@@ -1,93 +1,63 @@
-//
-// Created by victor on 20/07/2025.
-//
-
-#include "game.h"
-#include <curses.h>
+#include "Game.hpp"
+#include <ncurses.h>
 
 Game::Game() {
-    grid = new Grid(20, 10);
-    snake = new Snake();
-    livelloCorrente = new Livello(1); // inizialmente livello 1
-    punteggio = 0;
     running = true;
-}
 
-Game::~Game() {
-    delete grid;
-    delete snake;
-    delete livelloCorrente;
+    // per ora livelli base
+    Livello* livello1 = new Livello(1, 500); // 500ms
+    Livello* livello2 = new Livello(2, 300);
+    Livello* livello3 = new Livello(3, 150);
+
+    livello1->setNext(livello2);
+    livello2->setPrev(livello1);
+    livello2->setNext(livello3);
+    livello3->setPrev(livello2);
+
+    livelloCorrente = livello1;
 }
 
 void Game::start() {
-    // imposta ncurses (simile a main)
-    clear();
+    initscr();
+    noecho();
     curs_set(0);
     keypad(stdscr, TRUE);
 
-    // Ottieni la velocità dal livello corrente
-    int velocitaMs = livelloCorrente->getVelocita();
-    timeout(velocitaMs);
-
     loop();
+
+    endwin();
 }
 
 void Game::loop() {
-    while (true) {
+    while (running) {
+        clear();
+        mvprintw(0, 0, "Snake Game - Livello %d", livelloCorrente->getNumero());
+        mvprintw(2, 0, "Premi 'n' per nuovo livello, 'b' per tornare indietro, 'q' per uscire, qualsiasi altro tasto per giocare.");
+        refresh();
+
         int ch = getch();
-        handleInput(ch);
-        update();
-        render();
-        usleep(100000); // può cambiare con il livello
-    }
-
-    // dopo il gioco: salva punteggio o ritorna al menu
-}
-
-void Game::handleInput(int ch) {
-    switch (ch) {
-        case KEY_UP: snake->changeDirection(0, -1); break;
-        case KEY_DOWN: snake->changeDirection(0, 1); break;
-        case KEY_LEFT: snake->changeDirection(-1, 0); break;
-        case KEY_RIGHT: snake->changeDirection(1, 0); break;
-        case 'q': running = false; break;
-        case 'n': // avanza di livello
-            if (livelloCorrente->hasNext()) {
-                livelloCorrente = livelloCorrente->getNext();
-                timeout(livelloCorrente->getVelocita());
-            }
-        break;
-
-        case 'b': // torna indietro di livello
-            if (livelloCorrente->hasPrev()) {
-                livelloCorrente = livelloCorrente->getPrev();
-                timeout(livelloCorrente->getVelocita());
-            }
-        break;
-    }
-}
-
-void Game::update() {
-    snake->move();
-
-    // TODO: collisioni, mele, punteggio
-
-    // TODO: aggiorna punteggio, cambia livello se serve
-    if (/* condizione */) {
-        // livello successivo
-        if (livelloCorrente->getNext() != nullptr) {
+        if (ch == 'q') {
+            running = false;
+            break;
+        } else if (ch == 'n' && livelloCorrente->hasNext()) {
             livelloCorrente = livelloCorrente->getNext();
-            timeout(livelloCorrente->getVelocita());
-        }
-        timeout(livelloCorrente->getVelocita());      // aggiorna velocità
-    }
-}
+        } else if (ch == 'b' && livelloCorrente->hasPrev()) {
+            livelloCorrente = livelloCorrente->getPrev();
+        } else {
+            // avvia una partita con SnakeGame
+            SnakeGame partita(20, 50); // grandezza board
+            // modifica velocità in base al livello
+            // SnakeGame già usa wtimeout(500) -> lo cambiamo qui
+            partita.initialize();
 
-void Game::render() {
-    clear();
-    grid->draw();
-    snake->draw();
-    // TODO: disegna mela, punteggio, ecc.
-    mvprintw(0, 0, "Livello: %d", livelloCorrente->getNumero());
-    refresh();
+            while (!partita.isOver()) {
+                partita.processInput();
+                partita.updateState();
+                partita.redraw();
+            }
+
+            mvprintw(22, 0, "Game Over! Premi un tasto per tornare al menu...");
+            getch();
+        }
+    }
 }

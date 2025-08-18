@@ -5,26 +5,28 @@ project(SnakeGame)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Trova ncurses
-find_package(Curses REQUIRED)
-include_directories(${CURSES_INCLUDE_DIR})
-
-# Includi le tue librerie personalizzate
+# Includi le librerie personalizzate
 include_directories(libraries)
 
-# File sorgenti
+# File sorgenti (sources + libraries)
 file(GLOB_RECURSE SOURCES
         "sources/*.cpp"
         "libraries/*.cpp"
 )
 
 # Crea eseguibile
-add_executable(SnakeGame ${SOURCES}
-        libraries/menu.h
-        libraries/menu.cpp
-        libraries/game.cpp
-        libraries/livello.h
-        libraries/livello.cpp)
+add_executable(SnakeGame ${SOURCES})
 
-# Collega la libreria ncurses
-target_link_libraries(SnakeGame ${CURSES_LIBRARIES})
+# --- Gestione libreria curses cross-platform ---
+if (WIN32)
+    # Su Windows usiamo PDCurses
+    # Supponiamo che tu abbia PDCurses in C:/pdcurses
+    include_directories("C:/pdcurses")
+    link_directories("C:/pdcurses")
+    target_link_libraries(SnakeGame pdcurses)
+else()
+    # Su Linux/macOS usiamo ncurses
+    find_package(Curses REQUIRED)
+    include_directories(${CURSES_INCLUDE_DIR})
+    target_link_libraries(SnakeGame ${CURSES_LIBRARIES})
+endif()
