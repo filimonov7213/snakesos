@@ -55,15 +55,26 @@ void Game::start() {
         mvprintw(14, 10, "Premi 'q' per tornare al menu");
         refresh();
 
-        int ch = getch();
-        if (ch == 'q') {
-            break;
-        } else if (ch == 'n' && current->next != nullptr) {
-            current = current->next;
-        } else if (ch == 'b' && current->prev != nullptr) {
-            current = current->prev;
-        } else {
-            // se premi altro rimane sullo stesso livello
+        int ch;
+        while (true) {
+            ch = getch();
+            if (ch == 'q') {
+                clear();        // ⬅ pulisci tutto
+                refresh();
+                return; // esci al menu principale
+            } else if (ch == 'n' && current->next != nullptr) {
+                clear();        // ⬅ pulisci tutto
+                refresh();
+                current = current->next;
+                break; // esci dal loop "game over" e riparti col prossimo livello
+            } else if (ch == 'b' && current->prev != nullptr) {
+                clear();        // ⬅ pulisci tutto
+                refresh();
+                current = current->prev;
+                break; // idem ma livello precedente
+            } else {
+                // se premi altro rimane nel loop e aspetta un input valido
+            }
         }
     }
 
