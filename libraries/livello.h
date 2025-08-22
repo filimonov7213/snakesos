@@ -1,34 +1,23 @@
-//
-// Created by victor on 20/07/2025.
-//
-
-#ifndef LIVELLO_H
-#define LIVELLO_H
-
-#include <iostream>
+#pragma once
+#include <string>
 
 class Livello {
- private:
-    int numero;           // Numero del livello (1, 2, 3...)
-    int velocita;         // Velocità in millisecondi per timeout()
-    Livello* next;        // Puntatore al livello successivo
-    Livello* prev;        // Puntatore al livello precedente
+public:
+    Livello(int id, int speed, int h, int w);
 
- public:
-    // Costruttore
-    Livello(int num, int vel);
+    // getter
+    int getSpeed() const;
+    int getHeight() const;
+    int getWidth() const;
+    std::string getName() const;
 
-    // Setters per collegare la lista
-    void setNext(Livello* n);
-    void setPrev(Livello* p);
+    // collegamenti lista
+    Livello* next;
+    Livello* prev;
 
-    // Getters
-    int getNumero() const;
-    int getVelocita() const;
-    Livello* getNext() const;
-    Livello* getPrev() const;
-    bool hasNext() const;
-    bool hasPrev() const;
+private:
+    int levelId;
+    int speed;   // timeout in ms
+    int height;
+    int width;
 };
-
-#endif //LIVELLO_H

@@ -34,10 +34,41 @@ int main() {
   }
 }*/
 
-#include "../libraries/game.h"
+#include <curses.h>
+#include "menu.h"
+#include "game.h"
 
 int main() {
-  Game gioco;
-  gioco.start();
+  initscr();
+  noecho();
+  cbreak();
+  curs_set(0);
+
+  bool running = true;
+  while (running) {
+    Menu menu;
+    int choice = menu.show();
+
+    switch (choice) {
+      case 0: { // Nuova partita
+        Game game;
+        game.start();
+        break;
+      }
+      case 1: { // Classifica
+        clear();
+        mvprintw(5, 10, "Classifica non ancora implementata!");
+        refresh();
+        getch();
+        break;
+      }
+      case 2: // Esci
+        running = false;
+      break;
+    }
+  }
+
+  endwin();
   return 0;
 }
+

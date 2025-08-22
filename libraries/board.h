@@ -39,6 +39,9 @@ public:
         wtimeout(board_win, timeout);
     }
 
+    int getHeight() const { return height; }
+    int getWidth()  const { return width; }
+
     chtype getCharAt(int y, int x);
 
 private:

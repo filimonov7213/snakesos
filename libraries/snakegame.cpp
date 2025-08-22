@@ -48,73 +48,73 @@ void SnakeGame::initialize() {
 }
 
 void SnakeGame::processInput() {
+    if (game_over) {
+        return; // ⬅️ nessun input processato dopo la morte
+    }
+
     chtype input = board.getInput();
+    if (input == ERR) return; // timeout scaduto, nessun input
 
     switch (input) {
         case KEY_UP:
-        case 'w':
-            snake.setDirection(up);
-            break;
+        case 'w': snake.setDirection(up); break;
         case KEY_DOWN:
-        case 's':
-            snake.setDirection(down);
-            break;
+        case 's': snake.setDirection(down); break;
         case KEY_LEFT:
-        case 'a':
-            snake.setDirection(left);
-            break;
+        case 'a': snake.setDirection(left); break;
         case KEY_RIGHT:
-        case 'd':
-            snake.setDirection(right);
-            break;
-        // for the implementation of PAUSE
-        case 'p':
-            board.setTimeout(-1); // -1 is the value used for blocking input
-            while (board.getInput() != 'p');
-            board.setTimeout(500); // TODO: create global const variable for the speed of the game
-            break;
-        default:
-            break;
+        case 'd': snake.setDirection(right); break;
+
+        case 'p': // pausa
+            board.setTimeout(-1);
+        while (board.getInput() != 'p');
+        board.setTimeout(500);
+        break;
     }
 }
 
 void SnakeGame::updateState() {
-    SnakePiece next = snake.nextHead();
+    if (game_over) return;  // ⬅ se già finito, non aggiornare
 
-    if (apple != nullptr)
-    {
-        switch (board.getCharAt(next.getY(), next.getX()))
-        {
-            case 'A': {
-                destroyApple();
-                handleNextPiece(next);
-                // return tail coords
-                int emptyRow = snake.tail().getY();
-                int emptyCol = snake.tail().getX();
-                // add to tail coords an empty space
-                board.add(Empty(emptyRow, emptyCol));
-                snake.removePiece();
-                break;
-            }
-            case ' ': {
-                handleNextPiece(next);
-                // return tail coords
-                int emptyRow = snake.tail().getY();
-                int emptyCol = snake.tail().getX();
-                // add to tail coords an empty space
-                board.add(Empty(emptyRow, emptyCol));
-                snake.removePiece();
-                break;
-            }
-            // manage the other cases: when the snake touch himself or when it touches the borders
-            // TODO: FARE IN MODO CHE QUANDO SNAKE TOCCA IL BORDO SI TELETRASPORTI DALL'ALTRO LATO
-            default:
-                game_over = true;
-                break;
-        }
+    SnakePiece next = snake.nextHead();
+    int ny = next.getY();
+    int nx = next.getX();
+
+    // ontrollo bounds “duro” per evitare letture fuori finestra
+    if (ny <= 0 || ny >= board.getHeight()-1 || nx <= 0 || nx >= board.getWidth()-1) {
+        game_over = true;
+        return;
     }
+
+    // Maschera gli attributi del carattere
+    chtype cell = board.getCharAt(ny, nx) & A_CHARTEXT;
+
+    switch (cell) {
+        case 'A': {
+            destroyApple();
+            handleNextPiece(next);
+            int emptyRow = snake.tail().getY();
+            int emptyCol = snake.tail().getX();
+            board.add(Empty(emptyRow, emptyCol));
+            snake.removePiece();
+            break;
+        }
+        case ' ': {
+            handleNextPiece(next);
+            int emptyRow = snake.tail().getY();
+            int emptyCol = snake.tail().getX();
+            board.add(Empty(emptyRow, emptyCol));
+            snake.removePiece();
+            break;
+        }
+        default:
+            game_over = true;   // ⬅ muore su bordo o su sé stesso
+        return;             // ⬅ interrompi subito l’update
+    }
+
     if (apple == nullptr) createApple();
 }
+
 
 void SnakeGame::redraw() {
     board.refresh();

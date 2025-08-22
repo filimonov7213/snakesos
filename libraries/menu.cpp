@@ -26,6 +26,15 @@ void Menu::display() const{
     refresh();
 }
 
+int Menu::show() {
+    int choice = -1;
+    while (choice == -1) {   // rimani finché non viene selezionata un'opzione valida
+        display();
+        choice = gestisciInput();
+    }
+    return choice;
+}
+
 int Menu::gestisciInput() {
     int ch = getch(); // prende il carattere che l'utente clicca
     switch (ch) {

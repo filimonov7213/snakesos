@@ -5,14 +5,9 @@
 class Game {
 public:
     Game();
-
-    // avvia il gioco
-    void start();
-
-    // ciclo generale
-    void loop();
+    void start(); // gestisce i livelli e avvia SnakeGame
 
 private:
-    bool running;
-    Livello* livelloCorrente;
+    Livello* head;   // primo livello
+    Livello* tail;   // ultimo livello
 };
