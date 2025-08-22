@@ -16,7 +16,7 @@ SnakeProject/
 Funzionalità principali
 Interfaccia testuale (ASCII) usando ncurses
 
-Controllo del serpente tramite tastiera (freccette)
+Controllo del serpente tramite tastiera (freccette, wasd)
 
 Gestione multi-livello, con velocità crescente
 
