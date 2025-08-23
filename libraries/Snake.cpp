@@ -21,6 +21,14 @@ void Snake::initialize(int startY, int startX) {
     }
 }
 
+
+/* Non puoi andare su se stai andando giù
+
+Non puoi andare destra se stai andando
+sinistra
+
+Usa next_dir per applicare il cambio al prossimo movimento*/
+
 void Snake::setDirection(Direction d) {
     // Previene cambi di direzione opposti
     if ((cur_dir == up && d != down) ||

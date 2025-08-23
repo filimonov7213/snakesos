@@ -36,7 +36,7 @@ void SnakeGame::createApple() {
     int y, x;
     do {
         board.getEmptyCoordinates(y, x);
-    } while (snake.isAt(y, x)); // Assicurati che la mela non sia sullo snake
+    } while (snake.isAt(y, x)); // ass. che la mela non sia sullo snake
 
     apple = new Apple(y, x);
     board.add(*apple);
