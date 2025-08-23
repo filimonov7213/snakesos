@@ -1,59 +1,56 @@
-#include <curses.h>
 #include "snakegame.h"
 #include "empty.h"
+#include <cstdlib>
+#include <ctime>
 
-SnakeGame::SnakeGame(int height, int width) {
-    board = Board(height, width);
+SnakeGame::SnakeGame(int height, int width)
+    : board(height, width), apple(nullptr), game_over(false) {
     initialize();
 }
 
 SnakeGame::~SnakeGame() {
-    delete apple;
+    destroyApple();
 }
 
-void SnakeGame::handleNextPiece(SnakePiece next) {
-    board.add(next);
-    snake.addPiece(next);
+void SnakeGame::initialize() {
+    destroyApple();
+    board.initialize();
+    game_over = false;
+
+    srand(time(nullptr));
+
+    // Inizializza snake
+    snake.initialize(board.getHeight() / 2, board.getWidth() / 2);
+
+    // Disegna tutto lo snake iniziale
+    board.addAt(snake.getHeadY(), snake.getHeadX(), 'O'); // Testa
+    for (int i = 0; i < Snake::FIXED_LENGTH - 1; i++) {
+        board.addAt(snake.getBodyY(i), snake.getBodyX(i), 'o'); // Corpo
+    }
+
+    // Prima mela
+    createApple();
 }
 
 void SnakeGame::createApple() {
-    int y,x;
-    board.getEmptyCoordinates(y,x); //fill up (y, x) with an empty coordinate in the window
-    apple = new Apple(y,x);
+    int y, x;
+    do {
+        board.getEmptyCoordinates(y, x);
+    } while (snake.isAt(y, x)); // Assicurati che la mela non sia sullo snake
+
+    apple = new Apple(y, x);
     board.add(*apple);
 }
 
 void SnakeGame::destroyApple() {
-    delete apple;
-    apple = nullptr;
-}
-
-void SnakeGame::initialize() {
-    apple = nullptr;
-    board.initialize();
-    game_over = false;
-    srand(time(nullptr));
-
-    //initialize snake
-    snake.setDirection(down);
-    handleNextPiece(SnakePiece(1,1));
-    handleNextPiece(snake.nextHead());
-    handleNextPiece(snake.nextHead());
-    snake.setDirection(right);
-    handleNextPiece(snake.nextHead());
-
-    //initialize apple
-    if (apple == nullptr)
-        createApple();
+    if (apple != nullptr) {
+        delete apple;
+        apple = nullptr;
+    }
 }
 
 void SnakeGame::processInput() {
-    if (game_over) {
-        return; // ⬅️ nessun input processato dopo la morte
-    }
-
     chtype input = board.getInput();
-    if (input == ERR) return; // timeout scaduto, nessun input
 
     switch (input) {
         case KEY_UP:
@@ -67,59 +64,58 @@ void SnakeGame::processInput() {
 
         case 'p': // pausa
             board.setTimeout(-1);
-        while (board.getInput() != 'p');
-        board.setTimeout(500);
-        break;
+            while (board.getInput() != 'p');
+            board.setTimeout(200);
+            break;
+        default: break;
     }
 }
 
-void SnakeGame::updateState() {
-    if (game_over) return;  // ⬅ se già finito, non aggiornare
+void SnakeGame::updateSnakePosition() {
+    // Salva la posizione della coda (ultimo segmento) per cancellarla dopo
+    int tailY = snake.getBodyY(Snake::FIXED_LENGTH - 2);
+    int tailX = snake.getBodyX(Snake::FIXED_LENGTH - 2);
 
-    SnakePiece next = snake.nextHead();
-    int ny = next.getY();
-    int nx = next.getX();
+    // Muovi lo snake
+    snake.move();
 
-    // ontrollo bounds “duro” per evitare letture fuori finestra
-    if (ny <= 0 || ny >= board.getHeight()-1 || nx <= 0 || nx >= board.getWidth()-1) {
+    // Ottieni le nuove posizioni
+    int headY = snake.getHeadY();
+    int headX = snake.getHeadX();
+
+    // Controlla collisioni
+    chtype nextChar = board.getCharAt(headY, headX);
+
+    if (nextChar == 'A') { // Mela
+        destroyApple();
+        createApple();
+        // Non cresce, quindi non cambia la lunghezza
+    } else if (nextChar != ' ') { // Collisione con muro o sé stesso
         game_over = true;
         return;
     }
 
-    // Maschera gli attributi del carattere
-    chtype cell = board.getCharAt(ny, nx) & A_CHARTEXT;
+    // Aggiorna la board
+    board.addAt(tailY, tailX, ' '); // Cancella la coda vecchia
 
-    switch (cell) {
-        case 'A': {
-            destroyApple();
-            handleNextPiece(next);
-            int emptyRow = snake.tail().getY();
-            int emptyCol = snake.tail().getX();
-            board.add(Empty(emptyRow, emptyCol));
-            snake.removePiece();
-            break;
-        }
-        case ' ': {
-            handleNextPiece(next);
-            int emptyRow = snake.tail().getY();
-            int emptyCol = snake.tail().getX();
-            board.add(Empty(emptyRow, emptyCol));
-            snake.removePiece();
-            break;
-        }
-        default:
-            game_over = true;   // ⬅ muore su bordo o su sé stesso
-        return;             // ⬅ interrompi subito l’update
+    // Aggiorna tutto il corpo
+    for (int i = Snake::FIXED_LENGTH - 2; i > 0; i--) {
+        board.addAt(snake.getBodyY(i), snake.getBodyX(i), 'o');
     }
-
-    if (apple == nullptr) createApple();
+    board.addAt(snake.getBodyY(0), snake.getBodyX(0), 'o'); // Primo segmento del corpo
+    board.addAt(headY, headX, 'O'); // Nuova testa
 }
 
+void SnakeGame::updateState() {
+    if (game_over) return;
+
+    updateSnakePosition();
+}
 
 void SnakeGame::redraw() {
     board.refresh();
 }
 
-bool SnakeGame::isOver() {
+bool SnakeGame::isOver() const {
     return game_over;
 }

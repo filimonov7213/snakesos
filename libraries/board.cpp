@@ -1,5 +1,7 @@
 #include "board.h"
 #include "snakegame.h"
+#include <cstdlib>
+#include <ctime>
 
 Board::Board() {
     construct(0,0);

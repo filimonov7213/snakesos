@@ -1,73 +1,34 @@
 #pragma once
 
-#include <curses.h>
-#include <queue>
-#include "drawable.h"
-
 enum Direction {
     up = -1,
     down = 1,
     left = -2,
     right = 2
-
-    // the illegal moves (like going up and down at the same time) add up to 0.
-    // But the non-illegal moves don't add up to 0
-    // this allows setDirection() to don't have illegal moves.
 };
 
-class SnakePiece : public Drawable {
-public:
-    SnakePiece();
-    SnakePiece(int y, int x);
-};
-
-//queue class FIFO
 class Snake {
 public:
+    static const int FIXED_LENGTH = 4; // Testa + 3 segmenti del corpo
+
     Snake();
 
-    //add a piece to the queue, "piece" is a "Drawable"
-    void addPiece(SnakePiece piece);
-
-    //remove a piece from the queue
-    void removePiece();
-
-    SnakePiece tail();
-
-    SnakePiece head();
-
-    Direction getDirection();
-
+    void initialize(int startY, int startX);
     void setDirection(Direction d);
+    Direction getDirection() const;
 
-    //takes the current head and decide what the position of the next head is going to be
-    SnakePiece nextHead();
+    void move();
+    bool isAt(int y, int x) const;
+
+    int getHeadY() const;
+    int getHeadX() const;
+    int getBodyY(int index) const;
+    int getBodyX(int index) const;
 
 private:
-    std::queue<SnakePiece> prev_pieces; //prev_pieces is a queue made of SnakePiece
-    Direction cur_direction;
+    int headY, headX;
+    int bodyY[FIXED_LENGTH - 1]; // Solo i segmenti del corpo (esclusa testa)
+    int bodyX[FIXED_LENGTH - 1];
+    Direction cur_dir;
+    Direction next_dir; // Per gestire i cambi di direzione
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

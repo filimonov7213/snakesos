@@ -1,69 +1,85 @@
 #include "Snake.h"
+#include <cstring>
 
-SnakePiece::SnakePiece() {
-    this->x = this->y = 0;
-    this->icon = '#';
+Snake::Snake() : headY(0), headX(0), cur_dir(right), next_dir(right) {
+    for (int i = 0; i < FIXED_LENGTH - 1; i++) {
+        bodyY[i] = -1;
+        bodyX[i] = -1;
+    }
 }
 
-SnakePiece::SnakePiece(int y, int x) {
-    this->y = y;
-    this->x = x;
-    this->icon = '#';
-}
+void Snake::initialize(int startY, int startX) {
+    headY = startY;
+    headX = startX;
+    cur_dir = right;
+    next_dir = right;
 
-Snake::Snake() {
-    cur_direction = down;
-}
-
-void Snake::addPiece(SnakePiece piece) {
-    prev_pieces.push(piece);
-}
-
-void Snake::removePiece() {
-    prev_pieces.pop();
-}
-
-SnakePiece Snake::head() {
-    return prev_pieces.back();
-}
-
-SnakePiece Snake::tail() {
-    return prev_pieces.front();
-}
-
-Direction Snake::getDirection() {
-    return cur_direction;
+    // Inizializza il corpo in posizioni consecutive a sinistra della testa
+    for (int i = 0; i < FIXED_LENGTH - 1; i++) {
+        bodyY[i] = startY;
+        bodyX[i] = startX - (i + 1);
+    }
 }
 
 void Snake::setDirection(Direction d) {
-    if (cur_direction + d != 0)
-        cur_direction = d;
-}
-
-SnakePiece Snake::nextHead() {
-    // finds the coords of the head of the queue
-    int row = head().getY();
-    int col = head().getX();
-
-    switch (cur_direction) {
-        case down:
-            row++;
-            break;
-        case up:
-            row--;
-            break;
-        case right:
-            col++;
-            break;
-        case left:
-            col--;
-            break;
+    // Previene cambi di direzione opposti
+    if ((cur_dir == up && d != down) ||
+        (cur_dir == down && d != up) ||
+        (cur_dir == left && d != right) ||
+        (cur_dir == right && d != left)) {
+        next_dir = d;
     }
-    return SnakePiece(row,col);
 }
 
+Direction Snake::getDirection() const {
+    return cur_dir;
+}
 
+void Snake::move() {
+    // Applica il cambio di direzione
+    cur_dir = next_dir;
 
+    // Salva la posizione corrente della testa
+    int prevHeadY = headY;
+    int prevHeadX = headX;
 
+    // Muovi la testa nella nuova direzione
+    switch (cur_dir) {
+        case up:    headY--; break;
+        case down:  headY++; break;
+        case left:  headX--; break;
+        case right: headX++; break;
+    }
 
+    // Muovi il corpo: ogni segmento prende la posizione del precedente
+    for (int i = FIXED_LENGTH - 2; i > 0; i--) {
+        bodyY[i] = bodyY[i - 1];
+        bodyX[i] = bodyX[i - 1];
+    }
+
+    // Il primo segmento del corpo prende la posizione precedente della testa
+    bodyY[0] = prevHeadY;
+    bodyX[0] = prevHeadX;
+}
+
+bool Snake::isAt(int y, int x) const {
+    // Controlla la testa
+    if (y == headY && x == headX) {
+        return true;
+    }
+
+    // Controlla il corpo
+    for (int i = 0; i < FIXED_LENGTH - 1; i++) {
+        if (bodyY[i] == y && bodyX[i] == x) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+int Snake::getHeadY() const { return headY; }
+int Snake::getHeadX() const { return headX; }
+int Snake::getBodyY(int index) const { return bodyY[index]; }
+int Snake::getBodyX(int index) const { return bodyX[index]; }
 

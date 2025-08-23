@@ -39,36 +39,35 @@ int main() {
 #include "game.h"
 
 int main() {
-  initscr();
-  noecho();
-  cbreak();
-  curs_set(0);
+  initscr();          // inizializza ncurses
+  noecho();           // non mostra i tasti premuti
+  cbreak();           // input immediato (senza invio)
+  curs_set(0);        // nasconde il cursore
+  keypad(stdscr, TRUE);
 
   bool running = true;
+
   while (running) {
     Menu menu;
     int choice = menu.show();
 
-    switch (choice) {
-      case 0: { // Nuova partita
-        Game game;
-        game.start();
-        break;
-      }
-      case 1: { // Classifica
-        clear();
-        mvprintw(5, 10, "Classifica non ancora implementata!");
-        refresh();
-        getch();
-        break;
-      }
-      case 2: // Esci
-        running = false;
-      break;
+    if (choice == 0) {   // Nuova Partita
+      Game game;
+      game.start();    // gestisce livelli e loop interno
+    }
+    else if (choice == 1) { // Visualizza Classifica
+      clear();
+      mvprintw(5, 5, "Classifica (da implementare)");
+      mvprintw(7, 5, "Premi un tasto per tornare al menu...");
+      refresh();
+      getch();
+    }
+    else {
+      running = false; // ESC o uscita dal menu
     }
   }
 
-  endwin();
+  endwin();  // chiude ncurses
   return 0;
 }
 
