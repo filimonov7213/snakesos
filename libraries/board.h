@@ -22,6 +22,7 @@ public:
     // and when it's done it will have saved the value in the y and in the x
     void getEmptyCoordinates(int& y, int& x);
 
+
     //runs clear() and refresh()
     void initialize();
 

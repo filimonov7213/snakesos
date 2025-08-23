@@ -4,7 +4,7 @@
 #include <ctime>
 
 SnakeGame::SnakeGame(int height, int width)
-    : board(height, width), apple(nullptr), game_over(false) {
+    : board(height, width), apple(nullptr), game_over(false), currentSpeed(500) {
     initialize();
 }
 
@@ -63,12 +63,17 @@ void SnakeGame::processInput() {
         case 'd': snake.setDirection(right); break;
 
         case 'p': // pausa
-            board.setTimeout(-1);
-            while (board.getInput() != 'p');
-            board.setTimeout(200);
-            break;
+            board.setTimeout(-1); // Input bloccante
+        while (board.getInput() != 'p'); // Aspetta che premi 'p' again
+        board.setTimeout(currentSpeed); // Torna alla velocità CORRETTA
+        break;
         default: break;
     }
+}
+
+void SnakeGame::setGameSpeed(int speed) {
+    currentSpeed = speed;
+    board.setTimeout(speed);
 }
 
 void SnakeGame::updateSnakePosition() {

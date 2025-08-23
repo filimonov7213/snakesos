@@ -3,9 +3,9 @@
 
 Game::Game() {
     // crea manualmente la lista doppiamente collegata
-    Livello* lvl1 = new Livello(1, 500, 17, 40);  // lento
-    Livello* lvl2 = new Livello(2, 300, 20, 50);  // medio
-    Livello* lvl3 = new Livello(3, 150, 25, 60);  // veloce
+    Livello* lvl1 = new Livello(1, 200, 30, 60);  // lento
+    Livello* lvl2 = new Livello(2, 100, 30, 60);  // medio
+    Livello* lvl3 = new Livello(3, 50, 30, 60);  // veloce
 
     // collegamenti
     lvl1->next = lvl2;
@@ -29,7 +29,6 @@ void Game::start() {
             break;
         }
 
-        // controlla dimensioni minime per evitare crash con newwin
         if (current->getHeight() < 2 || current->getWidth() < 2) {
             clear();
             mvprintw(5, 5, "Errore: dimensioni livello non valide!");
@@ -40,6 +39,9 @@ void Game::start() {
 
         // avvia il gioco sul livello corrente
         SnakeGame game(current->getHeight(), current->getWidth());
+
+        // imposta la velocità del livello
+        game.setGameSpeed(current->getSpeed());
 
         while (!game.isOver()) {
             game.processInput();
@@ -59,26 +61,23 @@ void Game::start() {
         while (true) {
             ch = getch();
             if (ch == 'q') {
-                clear();        // ⬅ pulisci tutto
+                clear();
                 refresh();
-                return; // esci al menu principale
+                return;
             } else if (ch == 'n' && current->next != nullptr) {
-                clear();        // ⬅ pulisci tutto
+                clear();
                 refresh();
                 current = current->next;
-                break; // esci dal loop "game over" e riparti col prossimo livello
+                break;
             } else if (ch == 'b' && current->prev != nullptr) {
-                clear();        // ⬅ pulisci tutto
+                clear();
                 refresh();
                 current = current->prev;
-                break; // idem ma livello precedente
-            } else {
-                // se premi altro rimane nel loop e aspetta un input valido
+                break;
             }
         }
     }
 
-    // pausa finale prima di tornare al menu principale
     clear();
     mvprintw(10, 10, "Uscita dal gioco. Premi un tasto per tornare al menu...");
     refresh();

@@ -12,6 +12,7 @@ public:
     void processInput();
     void updateState();
     void redraw();
+    void setGameSpeed(int speed);
     bool isOver() const;
 
 private:
@@ -22,5 +23,7 @@ private:
     Board board;
     Snake snake;
     Apple* apple;
+    int currentSpeed;
     bool game_over;
+
 };

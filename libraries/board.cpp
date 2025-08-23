@@ -57,9 +57,10 @@ void Board::construct(int height, int width) {
     this->width = width;
 
     board_win = newwin(height, width, (yMax / 2) - (height / 2), (xMax / 2) - (width / 2));
-    wtimeout(board_win, 500); //makes the board refresh every ms
+    //wtimeout(board_win, 500); //makes the board refresh every ms
     keypad(board_win, true);
 }
+
 
 
 
