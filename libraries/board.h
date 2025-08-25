@@ -39,6 +39,13 @@ public:
     void setTimeout(int timeout) {
         wtimeout(board_win, timeout);
     }
+    int getStartRow(){
+      return start_row;
+    }
+
+    int getStartCol(){
+        return start_col;
+    }
 
     int getHeight() const { return height; }
     int getWidth()  const { return width; }
@@ -48,6 +55,8 @@ public:
 private:
     WINDOW *board_win;
     int height, width;
+    int start_row;
+    int start_col;
 
     //creates a window, needed to create the default constructor
     void construct(int height, int width);

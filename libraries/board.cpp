@@ -55,8 +55,10 @@ void Board::construct(int height, int width) {
     getmaxyx(stdscr, yMax, xMax);
     this->height = height;
     this->width = width;
+    start_row = (yMax / 2) - (height / 2);
+    start_col = (xMax / 2) - (width / 2);
 
-    board_win = newwin(height, width, (yMax / 2) - (height / 2), (xMax / 2) - (width / 2));
+    board_win = newwin(height, width, start_row, start_col);
     //wtimeout(board_win, 500); //makes the board refresh every ms
     keypad(board_win, true);
 }

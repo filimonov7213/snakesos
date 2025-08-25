@@ -38,7 +38,7 @@ void Game::start() {
         }
 
         // avvia il gioco sul livello corrente
-        SnakeGame game(current->getHeight(), current->getWidth());
+        SnakeGame game(current->getHeight(), current->getWidth(),current);
 
         // imposta la velocità del livello
         game.setGameSpeed(current->getSpeed());

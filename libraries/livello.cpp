@@ -4,6 +4,10 @@ Livello::Livello(int id, int speed, int h, int w)
     : levelId(id), speed(speed), height(h), width(w),
       next(nullptr), prev(nullptr) {}
 
+int Livello::getId() const {
+  return levelId;
+}
+
 int Livello::getSpeed() const {
     return speed;
 }

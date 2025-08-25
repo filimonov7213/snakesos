@@ -1,11 +1,16 @@
 #include "snakegame.h"
+#include "Scoreboard.h"
 #include "empty.h"
+#include "livello.h"
 #include <cstdlib>
 #include <ctime>
 
-SnakeGame::SnakeGame(int height, int width)
-    : board(height, width), apple(nullptr), game_over(false), currentSpeed(500) {
-    initialize();
+SnakeGame::SnakeGame(int height, int width,Livello *current)
+    : board(height, width), apple(nullptr), game_over(false), currentSpeed(500), currentLevel(current) {
+  int sb_row =board.getStartRow() + height ;
+  int sb_col= board.getStartCol();
+  scoreboard = Scoreboard(width,sb_row,sb_col);
+  initialize();
 }
 
 SnakeGame::~SnakeGame() {
@@ -15,6 +20,11 @@ SnakeGame::~SnakeGame() {
 void SnakeGame::initialize() {
     destroyApple();
     board.initialize();
+
+    //inizializazza score
+    score = 0;
+    scoreboard.initialize(score);
+
     game_over = false;
 
     srand(time(nullptr));
@@ -44,6 +54,9 @@ void SnakeGame::createApple() {
 
 void SnakeGame::destroyApple() {
     if (apple != nullptr) {
+        score += currentLevel->getId();  // Punteggio in base al livello
+        scoreboard.updateScore(score);
+        // Elimina la mela
         delete apple;
         apple = nullptr;
     }
@@ -88,6 +101,27 @@ void SnakeGame::updateSnakePosition() {
     int headY = snake.getHeadY();
     int headX = snake.getHeadX();
 
+    int maxY = board.getHeight() - 2; // Esclude bordo inferiore
+    int maxX = board.getWidth() - 2;  // Esclude bordo destro
+    int minY = 1; // Esclude bordo superiore
+    int minX = 1; // Esclude bordo sinistro
+
+    // Wrapping effetto Pac-Man
+    if (headX < minX) {
+        headX = maxX;
+    } else if (headX > maxX) {
+        headX = minX;
+    }
+
+    if (headY < minY) {
+        headY = maxY;
+    } else if (headY > maxY) {
+        headY = minY;
+    }
+
+    // Aggiorna la testa con le nuove coordinate
+    snake.setHeadPosition(headY, headX);
+
     // Controlla collisioni
     chtype nextChar = board.getCharAt(headY, headX);
 
@@ -119,6 +153,7 @@ void SnakeGame::updateState() {
 
 void SnakeGame::redraw() {
     board.refresh();
+    scoreboard.refresh();
 }
 
 bool SnakeGame::isOver() const {

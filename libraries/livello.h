@@ -6,6 +6,7 @@ public:
     Livello(int id, int speed, int h, int w);
 
     // getter
+    int getId() const;
     int getSpeed() const;
     int getHeight() const;
     int getWidth() const;

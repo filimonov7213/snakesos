@@ -24,6 +24,7 @@ public:
     int getHeadX() const;
     int getBodyY(int index) const;
     int getBodyX(int index) const;
+    void setHeadPosition(int y, int x);
 
 private:
     int headY, headX;

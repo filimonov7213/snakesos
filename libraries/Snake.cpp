@@ -86,6 +86,11 @@ bool Snake::isAt(int y, int x) const {
     return false;
 }
 
+void Snake::setHeadPosition(int y, int x) {
+    headY = y;
+    headX = x;
+}
+
 int Snake::getHeadY() const { return headY; }
 int Snake::getHeadX() const { return headX; }
 int Snake::getBodyY(int index) const { return bodyY[index]; }
