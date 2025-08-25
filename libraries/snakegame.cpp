@@ -4,7 +4,9 @@
 #include <ctime>
 
 SnakeGame::SnakeGame(int height, int width)
-    : board(height, width), apple(nullptr), game_over(false), currentSpeed(500) {
+    : board(height, width), apple(nullptr), game_over(false), currentSpeed(200) {
+    // imposta dimensioni campo alla snake (per la matrice booleana)
+    snake.setFieldSize(height, width);
     initialize();
 }
 
@@ -17,108 +19,121 @@ void SnakeGame::initialize() {
     board.initialize();
     game_over = false;
 
-    srand(time(nullptr));
+    srand((unsigned)time(nullptr));
 
-    // Inizializza snake
-    snake.initialize(board.getHeight() / 2, board.getWidth() / 2);
+    // centra lo snake
+    int startY = 1 + (board.getHeight() - 2) / 2; // dentro il bordo
+    int startX = 1 + (board.getWidth()  - 2) / 2;
+    snake.initialize(startY, startX);
 
-    // Disegna tutto lo snake iniziale
-    board.addAt(snake.getHeadY(), snake.getHeadX(), 'O'); // Testa
-    for (int i = 0; i < Snake::FIXED_LENGTH - 1; i++) {
-        board.addAt(snake.getBodyY(i), snake.getBodyX(i), 'o'); // Corpo
+    // disegna snake iniziale
+    for (int i = Snake::FIXED_LENGTH - 1; i >= 1; --i) {
+        board.addAt(snake.getBodyY(i), snake.getBodyX(i), 'o');
     }
+    board.addAt(snake.getHeadY(), snake.getHeadX(), 'O');
 
-    // Prima mela
+    // prima mela
     createApple();
+
+    // applica velocità corrente come timeout di input (game tick)
+    board.setTimeout(currentSpeed);
 }
 
 void SnakeGame::createApple() {
     int y, x;
     do {
         board.getEmptyCoordinates(y, x);
-    } while (snake.isAt(y, x)); // ass. che la mela non sia sullo snake
+    } while (snake.isAt(y, x)); // non sulla snake
 
     apple = new Apple(y, x);
     board.add(*apple);
 }
 
 void SnakeGame::destroyApple() {
-    if (apple != nullptr) {
-        delete apple;
-        apple = nullptr;
-    }
+    if (apple) { delete apple; apple = nullptr; }
 }
 
 void SnakeGame::processInput() {
-    chtype input = board.getInput();
+    chtype input = board.getInput(); // blocca fino a timeout -> gestisce la velocità
 
     switch (input) {
         case KEY_UP:
-        case 'w': snake.setDirection(up); break;
+        case 'w': snake.setDirection(up);    break;
         case KEY_DOWN:
-        case 's': snake.setDirection(down); break;
+        case 's': snake.setDirection(down);  break;
         case KEY_LEFT:
-        case 'a': snake.setDirection(left); break;
+        case 'a': snake.setDirection(left);  break;
         case KEY_RIGHT:
         case 'd': snake.setDirection(right); break;
 
         case 'p': // pausa
-            board.setTimeout(-1); // Input bloccante
-        while (board.getInput() != 'p'); // Aspetta che premi 'p' again
-        board.setTimeout(currentSpeed); // Torna alla velocità CORRETTA
-        break;
-        default: break;
+            board.setTimeout(-1);
+            while (board.getInput() != 'p');
+            board.setTimeout(currentSpeed);
+            break;
+        default:
+            // timeout o tasto irrilevante: nessun cambio direzione
+            break;
     }
-}
-
-void SnakeGame::setGameSpeed(int speed) {
-    currentSpeed = speed;
-    board.setTimeout(speed);
-}
-
-void SnakeGame::updateSnakePosition() {
-    // Salva la posizione della coda (ultimo segmento) per cancellarla dopo
-    int tailY = snake.getBodyY(Snake::FIXED_LENGTH - 2);
-    int tailX = snake.getBodyX(Snake::FIXED_LENGTH - 2);
-
-    // Muovi lo snake
-    snake.move();
-
-    // Ottieni le nuove posizioni
-    int headY = snake.getHeadY();
-    int headX = snake.getHeadX();
-
-    // Controlla collisioni
-    chtype nextChar = board.getCharAt(headY, headX);
-
-    if (nextChar == 'A') { // Mela
-        destroyApple();
-        createApple();
-        // Non cresce, quindi non cambia la lunghezza
-    } else if (nextChar != ' ') { // Collisione con muro o sé stesso
-        game_over = true;
-        return;
-    }
-
-    // Aggiorna la board
-    board.addAt(tailY, tailX, ' '); // Cancella la coda vecchia
-
-    // Aggiorna tutto il corpo
-    for (int i = Snake::FIXED_LENGTH - 2; i > 0; i--) {
-        board.addAt(snake.getBodyY(i), snake.getBodyX(i), 'o');
-    }
-    board.addAt(snake.getBodyY(0), snake.getBodyX(0), 'o'); // Primo segmento del corpo
-    board.addAt(headY, headX, 'O'); // Nuova testa
 }
 
 void SnakeGame::updateState() {
     if (game_over) return;
 
-    updateSnakePosition();
+    // calcola prossima cella della testa
+    int ny = snake.getHeadY();
+    int nx = snake.getHeadX();
+    switch (snake.getDirection()) {
+        case up:    --ny; break;
+        case down:  ++ny; break;
+        case left:  --nx; break;
+        case right: ++nx; break;
+    }
+
+    // salva coda attuale (serve per permettere "entrare nella coda")
+    int tailY = snake.getTailY();
+    int tailX = snake.getTailX();
+
+    // leggi cosa c'è nella prossima cella
+    chtype nextC = board.getCharAt(ny, nx);
+
+    // collisione con bordo o corpo (CONSENTI se è la cella della coda)
+    if (nextC != ' ' && nextC != 'A') {
+        if (!(ny == tailY && nx == tailX)) { // non è la coda
+            game_over = true;
+            return;
+        }
+    }
+
+    // se mela, la mangi (non allunghiamo: lunghezza fissa) -> ricrea più tardi
+    bool ateApple = (nextC == 'A');
+
+    // pulisci visivamente la coda PRIMA di muovere
+    board.addAt(tailY, tailX, ' ');
+
+    // muovi lo snake: aggiorna FIFO e matrice booleana (rimuove coda, aggiunge testa)
+    snake.move();
+
+    // ridisegna corpo e testa
+    for (int i = Snake::FIXED_LENGTH - 1; i >= 1; --i) {
+        board.addAt(snake.getBodyY(i), snake.getBodyX(i), 'o');
+    }
+    board.addAt(snake.getHeadY(), snake.getHeadX(), 'O');
+
+    // ricrea la mela se mangiata
+    if (ateApple) {
+        destroyApple();
+        createApple();
+    }
 }
 
 void SnakeGame::redraw() {
     board.refresh();
+}
+
+void SnakeGame::setGameSpeed(int speed) {
+    currentSpeed = speed;      // ms
+    board.setTimeout(currentSpeed);
 }
 
 bool SnakeGame::isOver() const {

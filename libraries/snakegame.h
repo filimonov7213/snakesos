@@ -18,12 +18,11 @@ public:
 private:
     void createApple();
     void destroyApple();
-    void updateSnakePosition(); // Nuova funzione helper
+    void updateSnakePosition();
 
     Board board;
     Snake snake;
     Apple* apple;
     int currentSpeed;
     bool game_over;
-
 };
