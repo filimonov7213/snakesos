@@ -1,4 +1,7 @@
 #include "game.h"
+#include <fstream>
+#include <vector>
+
 #include <curses.h>
 
 Game::Game() {
@@ -49,8 +52,60 @@ void Game::start() {
             game.redraw();
         }
 
+
+        // Apri il file per leggere
+        std::ifstream rd_file(".\\scoreboard\\scoreboard.txt");
+
+        std::string line;
+        if (rd_file.is_open()) {
+            // Leggi esattamente 5 righe
+            for (int i = 0; i < SCORES_SIZE; i++) {
+                if (std::getline(rd_file, line)) {
+                    scores[i] = std::stoi(line);
+                }
+                // Se non c'è la riga, scores[i] rimane 0
+            }
+            rd_file.close();
+        }
+
+        //trova la posizione
+        int insertPosition = -1;
+        int newScore = game.getScore();
+        for (int i = 0; i < SCORES_SIZE; i++) {
+            if (newScore > scores[i]) {
+                insertPosition = i;
+                break;
+            }
+        }
+
+        if (insertPosition != -1) {
+            // 3. SPOSTA tutti i punteggi verso destra dalla posizione di inserimento
+            for (int i = 4; i > insertPosition; i--) {
+                scores[i] = scores[i - 1];
+            }
+
+            // 4. INSERISCI il nuovo punteggio nella posizione corretta
+            scores[insertPosition] = newScore;
+
+        }
+
+        // Apri il file in scrittura
+        std::ofstream wr_file(".\\scoreboard\\scoreboard.txt");
+
+        // Controlla se il file è stato aperto correttamente
+        if (wr_file.is_open()) {
+            // scrittura file
+            for (int i = 0; i < SCORES_SIZE; i++) {
+                wr_file << scores[i] << std::endl;
+            }
+
+            // Chiudi il file
+            wr_file.close();
+        }
+
         // messaggio post-partita
         clear();
+        mvprintw(8, 10, "Punteggio: %d", game.getScore());
         mvprintw(10, 10, "Game Over su %s", current->getName().c_str());
         mvprintw(12, 10, "Premi 'n' (next) per livello successivo");
         mvprintw(13, 10, "Premi 'b' (back) per livello precedente");
@@ -82,4 +137,28 @@ void Game::start() {
     mvprintw(10, 10, "Uscita dal gioco. Premi un tasto per tornare al menu...");
     refresh();
     getch();
+}
+
+void Game::classifica() {
+    // Apri il file per leggere
+    std::ifstream rd_file(".\\scoreboard\\scoreboard.txt");
+
+    std::string line;
+    if (rd_file.is_open()) {
+        // Leggi esattamente 5 righe
+        for (int i = 0; i < SCORES_SIZE; i++) {
+            if (std::getline(rd_file, line)) {
+                scores[i] = std::stoi(line);
+            }
+            // Se non c'è la riga, scores[i] rimane 0
+        }
+        rd_file.close();
+    }
+
+    clear();
+    mvprintw(16, 30, "TOP 5:");
+    for (int i = 0; i < SCORES_SIZE; i++) {
+        mvprintw(18+ i, 30, "Posizione %d: %d punti", i + 1, scores[i]);
+    }
+    refresh();
 }

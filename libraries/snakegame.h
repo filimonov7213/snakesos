@@ -16,6 +16,7 @@ public:
     void redraw();
     void setGameSpeed(int speed);
     bool isOver() const;
+    int getScore() const;
 
 private:
     void createApple();

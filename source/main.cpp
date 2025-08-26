@@ -56,9 +56,10 @@ int main() {
       game.start();    // gestisce livelli e loop interno
     }
     else if (choice == 1) { // Visualizza Classifica
+      Game game;
       clear();
-      mvprintw(5, 5, "Classifica (da implementare)");
       mvprintw(7, 5, "Premi un tasto per tornare al menu...");
+      game.classifica();
       refresh();
       getch();
     }

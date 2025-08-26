@@ -145,6 +145,10 @@ void SnakeGame::updateSnakePosition() {
     board.addAt(headY, headX, 'O'); // Nuova testa
 }
 
+int SnakeGame::getScore() const {
+  return(score);
+  }
+
 void SnakeGame::updateState() {
     if (game_over) return;
 
