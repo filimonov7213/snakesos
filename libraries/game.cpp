@@ -1,11 +1,12 @@
 #include "game.h"
 #include <curses.h>
+#include <chrono>
 
 Game::Game() {
-    // crea manualmente la lista doppiamente collegata
-    Livello* lvl1 = new Livello(1, 200, 30, 60);  // lento
-    Livello* lvl2 = new Livello(2, 100, 30, 60);  // medio
-    Livello* lvl3 = new Livello(3, 50, 30, 60);  // veloce
+    // creo la lista doppiamente collegata con tempo limite per livello
+    Livello* lvl1 = new Livello(1, 200, 30, 60, 2);   // lento - 20 secondi
+    Livello* lvl2 = new Livello(2, 100, 30, 60, 3);   // medio - 30 secondi
+    Livello* lvl3 = new Livello(3, 50,  30, 60, 4);   // veloce - 40 secondi
 
     // collegamenti
     lvl1->next = lvl2;
@@ -29,32 +30,39 @@ void Game::start() {
             break;
         }
 
-        if (current->getHeight() < 2 || current->getWidth() < 2) {
-            clear();
-            mvprintw(5, 5, "Errore: dimensioni livello non valide!");
-            refresh();
-            getch();
-            break;
-        }
-
         // avvia il gioco sul livello corrente
-        SnakeGame game(current->getHeight(), current->getWidth());
+        SnakeGame game(current->getHeight(), current->getWidth(), current->getTimeLimit());
 
-        // imposta la velocità del livello
         game.setGameSpeed(current->getSpeed());
+
+        // calcola tempo limite
+        auto startTime = std::chrono::steady_clock::now();
+        int timeLimit = current->getTimeLimit();
 
         while (!game.isOver()) {
             game.processInput();
             game.updateState();
             game.redraw();
+
+            // calcola tempo trascorso
+            auto now = std::chrono::steady_clock::now();
+            int elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count();
+
+            if (elapsed >= timeLimit) {
+                game.forceGameOver(); // serve aggiungere metodo in SnakeGame
+                break;
+            }
+
+            current->addScore(1); // 1 punto ogni ciclo vivo (puoi bilanciarlo)
         }
 
         // messaggio post-partita
         clear();
         mvprintw(10, 10, "Game Over su %s", current->getName().c_str());
-        mvprintw(12, 10, "Premi 'n' (next) per livello successivo");
-        mvprintw(13, 10, "Premi 'b' (back) per livello precedente");
-        mvprintw(14, 10, "Premi 'q' per tornare al menu");
+        mvprintw(11, 10, "Punteggio: %d", current->getScore());
+        mvprintw(13, 10, "Premi 'n' (next) per livello successivo");
+        mvprintw(14, 10, "Premi 'b' (back) per livello precedente");
+        mvprintw(15, 10, "Premi 'q' per tornare al menu");
         refresh();
 
         int ch;
@@ -77,9 +85,4 @@ void Game::start() {
             }
         }
     }
-
-    clear();
-    mvprintw(10, 10, "Uscita dal gioco. Premi un tasto per tornare al menu...");
-    refresh();
-    getch();
 }

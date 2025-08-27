@@ -5,7 +5,7 @@
 
 class SnakeGame {
 public:
-    SnakeGame(int height, int width);
+    SnakeGame(int height, int width, int timeLimit);
     ~SnakeGame();
 
     void initialize();
@@ -13,6 +13,7 @@ public:
     void updateState();
     void redraw();
     void setGameSpeed(int speed);
+    void forceGameOver();
     bool isOver() const;
 
 private:
@@ -23,6 +24,10 @@ private:
     Board board;
     Snake snake;
     Apple* apple;
-    int currentSpeed;
+
+    int currentSpeed;   // ms per tick
+    int timeLimit;      // in secondi
+    int tickCount;      // numero di cicli passati
+    int score;          // punteggio corrente
     bool game_over;
 };
