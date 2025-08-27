@@ -2,9 +2,10 @@
 #include "empty.h"
 #include <cstdlib>
 
-SnakeGame::SnakeGame(int height, int width, int timeLimit)
+SnakeGame::SnakeGame(int height, int width, int timeLimit, int appleFactor)
     : board(height, width), apple(nullptr), game_over(false),
-      currentSpeed(200), timeLimit(timeLimit), tickCount(0), score(0) {
+      currentSpeed(200), timeLimit(timeLimit), appleFactor(appleFactor), score(0) {
+    startTime = time(nullptr);
     initialize();
 }
 
@@ -18,6 +19,7 @@ void SnakeGame::initialize() {
     game_over = false;
     tickCount = 0;
     score = 0;
+//    appleFactor = 10;
 
     // inizializza snake al centro
     snake.initialize(board.getHeight() / 2, board.getWidth() / 2);
@@ -77,7 +79,7 @@ void SnakeGame::updateSnakePosition() {
     if (nextChar == 'A') {
         destroyApple();
         createApple();
-        score += 10; // punti extra per mela
+        score += appleFactor; // punti extra per mela
     } else if (nextChar != ' ') {
         game_over = true;
         return;
@@ -97,16 +99,14 @@ void SnakeGame::updateState() {
     tickCount++;
 
     // tempo in secondi
-    int elapsed = (tickCount * currentSpeed) / 1000;
+    //int elapsed = (tickCount * currentSpeed) / 1000;
+    int elapsed = static_cast<int>(time(nullptr) - startTime);
     int remaining = timeLimit - elapsed;
 
     if (remaining <= 0) {
         game_over = true;
         return;
     }
-
-    // punti = sopravvivenza
-    score += 1;
 
     updateSnakePosition();
 }
@@ -115,9 +115,12 @@ void SnakeGame::updateState() {
 void SnakeGame::redraw() {
     board.refresh();
 
+    int elapsed = static_cast<int>(time(nullptr) - startTime);
+    int remaining = timeLimit - elapsed;
+
     // stampa punteggio e tempo rimanente in alto
     mvprintw(0, board.getWidth() + 5, "Score: %d", score);
-    mvprintw(1, board.getWidth() + 5, "Time: %d", timeLimit - (tickCount * currentSpeed) / 1000);
+    mvprintw(1, board.getWidth() + 5, "Time left: %02d", remaining);
     refresh();
 }
 
@@ -128,6 +131,14 @@ void SnakeGame::setGameSpeed(int speed) {
 
 bool SnakeGame::isOver() const {
     return game_over;
+}
+
+void SnakeGame::setScore(int newScore) {
+    score = newScore;
+}
+
+int SnakeGame::getScore() const {
+    return score;
 }
 
 void SnakeGame::forceGameOver() {
