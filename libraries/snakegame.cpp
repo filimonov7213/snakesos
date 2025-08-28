@@ -18,7 +18,7 @@ void SnakeGame::initialize() {
     board.initialize();
     game_over = false;
     tickCount = 0;
-    score = 0;
+    //score = 0;
     hud = newwin(3, 30, 0, board.getWidth() + 2); // 3 righe, 30 colonne a destra del campo
 //    appleFactor = 10;
 
