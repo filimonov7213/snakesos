@@ -3,13 +3,14 @@
 
 class Livello {
 public:
-    Livello(int id, int speed, int h, int w, int timeLimit);
+    Livello(int id, int speed, int h, int w, int timeLimit, int appleFactor);
 
     // getter
     int getSpeed() const;
     int getHeight() const;
     int getWidth() const;
     int getTimeLimit() const;
+    int getAppleFactor() const;
     std::string getName() const;
 
     // punteggio
@@ -27,4 +28,5 @@ private:
     int width;
     int timeLimit;   // in secondi
     int score;       // punti accumulati
+    int appleFactor; // moltiplicatore punti per mela
 };
