@@ -41,6 +41,16 @@ void Board::refresh() {
     wrefresh(board_win);
 }
 
+const int Board::getWidth() {
+    return width;
+}
+
+const int Board::getHeight() {
+    return height;
+}
+
+void Board::setTimeout(int timeout) { wtimeout(board_win, timeout); }
+
 void Board::add(Drawable drawable) {
     addAt(drawable.getY(), drawable.getX(), drawable.getIcon());
 }
