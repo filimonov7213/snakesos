@@ -50,6 +50,18 @@ void Board::getEmptyCoordinates(int& y, int& x) {
     while ((mvwinch(board_win, y = rand() % height, x = rand() % width)) != ' ');
 }
 
+void Board::setTimeout(int timeout) {
+    wtimeout(board_win, timeout);
+}
+
+const int Board::getHeight(){
+    return height;
+}
+
+const int Board::getWidth(){
+    return width;
+}
+
 void Board::construct(int height, int width) {
     int xMax, yMax;
     getmaxyx(stdscr, yMax, xMax);

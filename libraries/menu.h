@@ -18,7 +18,6 @@ public:
     Menu();
     void display() const;
     int gestisciInput();
-
     int show();
 };
 
