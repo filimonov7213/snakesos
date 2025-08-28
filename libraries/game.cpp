@@ -83,7 +83,7 @@ void Game::start() {
             getch();
 
             // Aggiungi alla classifica
-            Leaderboard leaderboard("scores.txt");
+            Leaderboard leaderboard("../scoreboard/scoreboard.txt");
             leaderboard.addScore(playerName, totalScore);
             leaderboard.show();
 
@@ -98,10 +98,14 @@ void Game::start() {
             while (true) {
                 ch = getch();
                 if (ch == 'q') {
-                    // Salva il punteggio parziale se esce prima della fine
                     if (totalScore > 0) {
-                        Leaderboard leaderboard("scores.txt");
+                        Leaderboard leaderboard("../scoreboard/scoreboard.txt");
                         leaderboard.addScore(playerName, totalScore);
+                    }
+                    if (totalScore > 0) {
+                        Leaderboard leaderboard("../scoreboard/scoreboard.txt");
+                        leaderboard.addScore(playerName, totalScore);
+                        leaderboard.show();
                     }
                     clear();
                     refresh();

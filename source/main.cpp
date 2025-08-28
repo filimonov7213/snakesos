@@ -37,6 +37,7 @@ int main() {
 #include <curses.h>
 #include "menu.h"
 #include "game.h"
+#include "leaderboard.h"
 
 int main() {
   initscr();          // inizializza ncurses
@@ -56,11 +57,10 @@ int main() {
       game.start();    // gestisce livelli e loop interno
     }
     else if (choice == 1) { // Visualizza Classifica
-      clear();
-      mvprintw(5, 5, "Classifica (da implementare)");
-      mvprintw(7, 5, "Premi un tasto per tornare al menu...");
-      refresh();
-      getch();
+      // Mostra la classifica
+      Leaderboard leaderboard("../scoreboard/scoreboard.txt");
+      leaderboard.show();
+      // Dopo la visualizzazione, torna automaticamente al menu
     }
     else {
       running = false; // ESC o uscita dal menu
@@ -70,4 +70,3 @@ int main() {
   endwin();  // chiude ncurses
   return 0;
 }
-
