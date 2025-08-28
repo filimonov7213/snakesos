@@ -35,6 +35,8 @@ public:
     // uses the drawable class to add "icons" to the window. Ex. add(apple) or add(snake)
     void add(Drawable drawable);
 
+    void drawBorder();
+
     //for the implementation of PAUSE
     void setTimeout(int timeout) {
         wtimeout(board_win, timeout);

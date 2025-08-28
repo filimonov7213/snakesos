@@ -50,6 +50,13 @@ void Board::getEmptyCoordinates(int& y, int& x) {
     while ((mvwinch(board_win, y = rand() % height, x = rand() % width)) != ' ');
 }
 
+void Board::drawBorder() {
+    if (board_win) {
+        box(board_win, 0, 0);   // ridisegna riquadro
+        wrefresh(board_win);    // aggiorna la finestra
+    }
+}
+
 void Board::construct(int height, int width) {
     int xMax, yMax;
     getmaxyx(stdscr, yMax, xMax);

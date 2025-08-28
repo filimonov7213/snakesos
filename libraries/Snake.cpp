@@ -37,7 +37,7 @@ void Snake::clearOcc() {
             occ[r][c] = false;
 }
 
-void Snake::initialize(int startY, int startX) {
+void Snake::initialize(int startY, int startX, int height, int width) {
     // direzione di default a destra
     cur_dir = right;
     next_dir = right;
@@ -47,6 +47,9 @@ void Snake::initialize(int startY, int startX) {
 
     headY = startY;
     headX = startX;
+
+    boardHeight = height;
+    boardWidth = width;
 
     // FIFO: 0 testa, poi corpo verso sinistra
     segY[0] = headY;     segX[0] = headX;
@@ -82,13 +85,21 @@ void Snake::move() {
     cur_dir = next_dir;
 
     // calcola nuova testa
-    int ny = headY, nx = headX;
+    int ny = headY;
+    int nx = headX;
     switch (cur_dir) {
-        case up:    --ny; break;
-        case down:  ++ny; break;
-        case left:  --nx; break;
-        case right: ++nx; break;
+        case up:    ny--; break;
+        case down:  ny++; break;
+        case left:  nx--; break;
+        case right: nx++; break;
     }
+
+    // Wrap-around
+    if (ny < 0) ny = boardHeight - 1;
+    else if (ny >= boardHeight) ny = 0;
+
+    if (nx < 0) nx = boardWidth - 1;
+    else if (nx >= boardWidth) nx = 0;
 
     // rimuovi coda dalla matrice
     int tailY = segY[FIXED_LENGTH - 1];
@@ -97,13 +108,13 @@ void Snake::move() {
         occ[tailY][tailX] = false;
     }
 
-    // shift FIFO: dal fondo verso l'alto
+    // shift FIFO
     for (int i = FIXED_LENGTH - 1; i > 0; --i) {
         segY[i] = segY[i - 1];
         segX[i] = segX[i - 1];
     }
 
-    // nuova testa
+    // aggiorna testa
     segY[0] = ny;
     segX[0] = nx;
     headY = ny;
@@ -114,6 +125,7 @@ void Snake::move() {
         occ[ny][nx] = true;
     }
 }
+
 
 bool Snake::isAt(int y, int x) const {
     if (!occ) return false;

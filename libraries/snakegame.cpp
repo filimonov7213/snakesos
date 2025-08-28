@@ -19,13 +19,16 @@ void SnakeGame::initialize() {
     game_over = false;
     tickCount = 0;
     score = 0;
+    hud = newwin(3, 30, 0, board.getWidth() + 2); // 3 righe, 30 colonne a destra del campo
 //    appleFactor = 10;
 
     // inizializza snake al centro
-    snake.initialize(board.getHeight() / 2, board.getWidth() / 2);
+    snake.initialize(board.getHeight() / 2, board.getWidth() / 2,
+                 board.getHeight(), board.getWidth());
 
     // disegna snake iniziale
     board.addAt(snake.getHeadY(), snake.getHeadX(), 'O');
+    board.drawBorder();
     for (int i = 0; i < Snake::FIXED_LENGTH - 1; i++) {
         board.addAt(snake.getBodyY(i), snake.getBodyX(i), 'o');
     }
@@ -79,8 +82,9 @@ void SnakeGame::updateSnakePosition() {
     if (nextChar == 'A') {
         destroyApple();
         createApple();
-        score += appleFactor; // punti extra per mela
-    } else if (nextChar != ' ') {
+        score += appleFactor;
+    } else if (snake.isAt(headY, headX)) {
+        // Collisione con se stesso
         game_over = true;
         return;
     }
@@ -113,15 +117,18 @@ void SnakeGame::updateState() {
 
 
 void SnakeGame::redraw() {
+    board.drawBorder();
     board.refresh();
+    werase(hud);
+    box(hud, 0, 0);
 
     int elapsed = static_cast<int>(time(nullptr) - startTime);
     int remaining = timeLimit - elapsed;
 
     // stampa punteggio e tempo rimanente in alto
-    mvprintw(0, board.getWidth() + 5, "Score: %d", score);
-    mvprintw(1, board.getWidth() + 5, "Time left: %02d", remaining);
-    refresh();
+    mvwprintw(hud, 1, 1, "Score: %d", score);
+    mvwprintw(hud, 2, 1, "Time left: %02d", remaining);
+    wrefresh(hud);
 }
 
 void SnakeGame::setGameSpeed(int speed) {

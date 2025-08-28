@@ -27,6 +27,7 @@ private:
     Board board;
     Snake snake;
     Apple* apple;
+    WINDOW* hud; // hud
 
     int currentSpeed;   // ms per tick
     int timeLimit;      // in secondi

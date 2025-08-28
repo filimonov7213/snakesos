@@ -17,8 +17,9 @@ public:
     // La matrice booleana di occupazione ha dimensione = campo di gioco
     void setFieldSize(int h, int w);
 
-    // posiziona lo snake: testa a (startY, startX), corpo a sinistra
-    void initialize(int startY, int startX);
+    // posiziona lo snake: testa a (startY, startX, height, width), corpo a sinistra
+    void initialize(int startY, int startX, int height, int width);
+
 
     void setDirection(Direction d);
     Direction getDirection() const;
@@ -50,6 +51,9 @@ private:
 
     Direction cur_dir;
     Direction next_dir;
+
+    int boardHeight;
+    int boardWidth;
 
     void clearOcc();         // setta tutta la matrice a false
     void freeOcc();          // dealloca la matrice

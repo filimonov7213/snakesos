@@ -1,5 +1,8 @@
 #include "game.h"
 #include <curses.h>
+#include "leaderboard.h"
+#include <string>
+
 
 
 Game::Game() {

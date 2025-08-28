@@ -11,7 +11,9 @@ file(GLOB_RECURSE SOURCES
         "libraries/*.cpp"
 )
 
-add_executable(SnakeGame ${SOURCES})
+add_executable(SnakeGame ${SOURCES}
+        libraries/leaderboard.cpp
+        libraries/leaderboard.h)
 
 if (WIN32)
     # Path PDCurses (aggiusta se serve)
