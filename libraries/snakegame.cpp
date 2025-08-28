@@ -115,7 +115,6 @@ void SnakeGame::updateState() {
     updateSnakePosition();
 }
 
-
 void SnakeGame::redraw() {
     board.drawBorder();
     board.refresh();

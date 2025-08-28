@@ -4,7 +4,6 @@
 
 class Board {
 public:
-
     Board();
 
     Board(int height, int width);
@@ -22,7 +21,6 @@ public:
     // and when it's done it will have saved the value in the y and in the x
     void getEmptyCoordinates(int& y, int& x);
 
-
     //runs clear() and refresh()
     void initialize();
 
@@ -38,12 +36,11 @@ public:
     void drawBorder();
 
     //for the implementation of PAUSE
-    void setTimeout(int timeout) {
-        wtimeout(board_win, timeout);
-    }
+    void setTimeout(int timeout);
 
-    int getHeight() const { return height; }
-    int getWidth()  const { return width; }
+    const int getHeight();
+
+    const int getWidth();
 
     chtype getCharAt(int y, int x);
 
