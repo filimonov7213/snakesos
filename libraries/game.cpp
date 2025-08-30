@@ -22,42 +22,19 @@ Game::Game() : playerName("") {
 
 void Game::askPlayerName() {
     clear();
-    timeout(-1); // Disabilita timeout per input bloccante
-    echo();
-    curs_set(1);
-
-    mvprintw(10, 10, "Inserisci il tuo nome: ");
     refresh();
 
-    char name[50];
-    int ch;
-    int pos = 0;
+    // Disabilita temporaneamente ncurses per l'input
+    def_prog_mode(); // Salva lo stato di ncurses
+    endwin();        // Esci temporaneamente da ncurses
 
-    // Input manuale più robusto
-    while (pos < 49) {
-        ch = getch();
+    std::cout << "Inserisci il tuo nome: ";
+    std::cin >> playerName;
 
-        if (ch == '\n' || ch == KEY_ENTER) { // Invio
-            break;
-        } else if (ch == KEY_BACKSPACE || ch == 127) { // Backspace
-            if (pos > 0) {
-                pos--;
-                mvprintw(11, 10 + pos, " ");
-                refresh();
-            }
-        } else if (isprint(ch)) { // Carattere stampabile
-            name[pos++] = ch;
-            mvprintw(11, 10 + pos - 1, "%c", ch);
-            refresh();
-        }
-    }
-
-    name[pos] = '\0';
-    playerName = name;
-
-    noecho();
-    curs_set(0);
-    timeout(0); // Ripristina timeout normale
+    // Ritorna in modalità ncurses
+    reset_prog_mode(); // Ripristina lo stato di ncurses
+    refresh();
+    clear();
 }
 
 void Game::start() {
