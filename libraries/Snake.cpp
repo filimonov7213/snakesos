@@ -94,12 +94,11 @@ void Snake::move() {
         case right: nx++; break;
     }
 
-    // Wrap-around
-    if (ny < 0) ny = boardHeight - 1;
-    else if (ny >= boardHeight) ny = 0;
+   if (ny <= 0) ny = boardHeight - 2;
+else if (ny >= boardHeight - 1) ny = 1;
 
-    if (nx < 0) nx = boardWidth - 1;
-    else if (nx >= boardWidth) nx = 0;
+if (nx <= 0) nx = boardWidth - 2;
+else if (nx >= boardWidth - 1) nx = 1;
 
     // rimuovi coda dalla matrice
     int tailY = segY[FIXED_LENGTH - 1];
