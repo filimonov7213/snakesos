@@ -40,33 +40,44 @@ int main() {
 #include "leaderboard.h"
 
 int main() {
-  initscr();          // inizializza ncurses
-  noecho();           // non mostra i tasti premuti
-  cbreak();           // input immediato (senza invio)
-  curs_set(0);        // nasconde il cursore
+  initscr();
+  noecho();
+  cbreak();
+  curs_set(0);
   keypad(stdscr, TRUE);
+
+  // Colori se supportati
+  if (has_colors()) {
+    start_color();
+    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+  }
 
   bool running = true;
 
-  while (running) {
-    Menu menu;
-    int choice = menu.show();
+  try {
+    while (running) {
+      Menu menu;
+      int choice = menu.show();
 
-    if (choice == 0) {   // Nuova Partita
-      Game game;
-      game.start();    // gestisce livelli e loop interno
-    }
-    else if (choice == 1) { // Visualizza Classifica
-      // Mostra la classifica
-      Leaderboard leaderboard("../scoreboard/scoreboard.txt");
-      leaderboard.show();
-      // Dopo la visualizzazione, torna automaticamente al menu
-    }
-    else {
-      running = false; // ESC o uscita dal menu
+      if (choice == 0) {
+        Game game;
+        game.start();
+      }
+      else if (choice == 1) {
+        Leaderboard leaderboard("scoreboard.txt");
+        leaderboard.show();
+      }
+      else {
+        running = false;
+      }
     }
   }
+  catch (...) {
+    endwin();
+    std::cout << "Errore durante l'esecuzione" << std::endl;
+    return 1;
+  }
 
-  endwin();  // chiude ncurses
+  endwin();
   return 0;
 }
