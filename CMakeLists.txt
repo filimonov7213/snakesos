@@ -2,20 +2,30 @@ cmake_minimum_required(VERSION 3.10)
 project(SnakeGame)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Aggiungi tutte le cartelle sorgente
-include_directories(${CMAKE_SOURCE_DIR}/libraries)
+include_directories(libraries)
 
-file(GLOB SOURCES
-        ${CMAKE_SOURCE_DIR}/libraries/*.cpp
-        ${CMAKE_SOURCE_DIR}/source/*.cpp
+file(GLOB_RECURSE SOURCES
+        "source/*.cpp"
+        "libraries/*.cpp"
 )
 
-add_executable(SnakeGame ${SOURCES})
+add_executable(SnakeGame ${SOURCES}
+        libraries/leaderboard.cpp
+        libraries/leaderboard.h)
 
-# Link librerie diverse a seconda del sistema operativo
 if (WIN32)
+    # Path PDCurses (aggiusta se serve)
+    include_directories("C:/pdcurses")
+    link_directories("C:/pdcurses")
+
     target_link_libraries(SnakeGame pdcurses)
-elseif(UNIX)
-    target_link_libraries(SnakeGame ncurses)
+
+    # 👇 questa riga è fondamentale
+    set_target_properties(SnakeGame PROPERTIES LINK_FLAGS "-mconsole")
+else()
+    find_package(Curses REQUIRED)
+    include_directories(${CURSES_INCLUDE_DIR})
+    target_link_libraries(SnakeGame ${CURSES_LIBRARIES})
 endif()
