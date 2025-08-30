@@ -48,6 +48,11 @@ void Leaderboard::save() const {
 }
 
 void Leaderboard::addScore(const std::string& name, int score) {
+    for (auto& e : scores) {
+        if (e.name == name && e.score == score) {
+            return; // già presente
+        }
+    }
     scores.push_back({name, score});
     std::sort(scores.begin(), scores.end(), [](auto& a, auto& b){
         return a.score > b.score;
