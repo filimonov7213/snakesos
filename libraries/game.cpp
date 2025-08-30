@@ -22,17 +22,15 @@ Game::Game() : playerName("") {
 
 void Game::askPlayerName() {
     clear();
-    echo(); // Abilita l'echo per l'input
     mvprintw(10, 10, "Inserisci il tuo nome: ");
     refresh();
 
     char name[50];
-    echo();
-    wgetnstr(stdscr, name, 49);  // legge massimo 49 caratteri
-    noecho();
-    playerName = name;
+    echo();                     // abilita echo durante l'input
+    getnstr(name, 49);          // legge fino a 49 caratteri
+    noecho();                   // disabilita echo subito dopo
 
-    noecho(); // Disabilita l'echo
+    playerName = name;          // salva nel membro string
 }
 
 void Game::start() {
