@@ -22,20 +22,47 @@ Game::Game() : playerName("") {
 
 void Game::askPlayerName() {
     clear();
+    timeout(-1); // Disabilita timeout per input bloccante
+    echo();
+    curs_set(1);
+
     mvprintw(10, 10, "Inserisci il tuo nome: ");
     refresh();
 
     char name[50];
-    echo();                     // abilita echo durante l'input
-    getnstr(name, 49);          // legge fino a 49 caratteri
-    noecho();                   // disabilita echo subito dopo
+    int ch;
+    int pos = 0;
 
-    playerName = name;          // salva nel membro string
+    // Input manuale più robusto
+    while (pos < 49) {
+        ch = getch();
+
+        if (ch == '\n' || ch == KEY_ENTER) { // Invio
+            break;
+        } else if (ch == KEY_BACKSPACE || ch == 127) { // Backspace
+            if (pos > 0) {
+                pos--;
+                mvprintw(11, 10 + pos, " ");
+                refresh();
+            }
+        } else if (isprint(ch)) { // Carattere stampabile
+            name[pos++] = ch;
+            mvprintw(11, 10 + pos - 1, "%c", ch);
+            refresh();
+        }
+    }
+
+    name[pos] = '\0';
+    playerName = name;
+
+    noecho();
+    curs_set(0);
+    timeout(0); // Ripristina timeout normale
 }
 
 void Game::start() {
     // Chiedi il nome del giocatore all'inizio
-    askPlayerName();
+    //askPlayerName();
 
     Livello* current = head;
     int totalScore = 0;
