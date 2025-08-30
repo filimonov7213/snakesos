@@ -18,7 +18,7 @@ void Menu::display() const{
         if (i == selectedIndex) {
             attron(A_REVERSE); // evidenzia
         }
-        mvprintw(3 + i, 5, options[i].c_str()); // mvprintw vuole un array e c_str manda l'array di char
+        mvprintw(3 + i, 5, "%s", options[i].c_str()); // mvprintw vuole un array e c_str manda l'array di char
         if (i == selectedIndex) {
             attroff(A_REVERSE);
         }

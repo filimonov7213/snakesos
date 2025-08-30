@@ -27,7 +27,9 @@ void Game::askPlayerName() {
     refresh();
 
     char name[50];
-    getnstr(name, 49);
+    echo();
+    wgetnstr(stdscr, name, 49);  // legge massimo 49 caratteri
+    noecho();
     playerName = name;
 
     noecho(); // Disabilita l'echo
