@@ -29,6 +29,7 @@ private:
     Apple* apple;
     WINDOW* hud; // hud
 
+    bool isPaused = false;  // Aggiungi questa variabile membro
     int currentSpeed;   // ms per tick
     int timeLimit;      // in secondi
     int tickCount;      // numero di cicli passati

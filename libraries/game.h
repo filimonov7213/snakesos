@@ -11,6 +11,7 @@ public:
 private:
     void askPlayerName(); // nuovo metodo per chiedere il nome
 
+    bool isPaused;
     Livello* head;   // primo livello
     Livello* tail;   // ultimo livello
     std::string playerName; // nome del giocatore

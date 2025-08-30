@@ -19,8 +19,18 @@ void SnakeGame::initialize() {
     game_over = false;
     tickCount = 0;
     //score = 0;
-    hud = newwin(3, 30, 0, board.getWidth() + 2); // 3 righe, 30 colonne a destra del campo
-//    appleFactor = 10;
+
+    // Ottieni le dimensioni del terminale
+    int terminalHeight, terminalWidth;
+    getmaxyx(stdscr, terminalHeight, terminalWidth);
+
+    // Posiziona HUD a destra del terminale con margine
+    int hudWidth = 25;
+    int hudHeight = 5;
+    int hudX = terminalWidth - hudWidth - 2; // 2 caratteri di margine dal bordo destro
+    int hudY = 1; // Inizia dalla riga 1
+
+    hud = newwin(hudHeight, hudWidth, hudY, hudX);
 
     // inizializza snake al centro
     snake.initialize(board.getHeight() / 2, board.getWidth() / 2,
@@ -60,10 +70,22 @@ void SnakeGame::processInput() {
         case KEY_LEFT:  case 'a': snake.setDirection(left); break;
         case KEY_RIGHT: case 'd': snake.setDirection(right); break;
         case 'p': // pausa
-            board.setTimeout(-1);
-            while (board.getInput() != 'p');
-            board.setTimeout(currentSpeed);
+            if (!isPaused) {
+                // Entra in pausa
+                isPaused = true;
+                board.setTimeout(-1);
+                redraw(); // Ridisegna per mostrare "PAUSA"
+
+                // Aspetta che venga premuto di nuovo 'p' per uscire dalla pausa
+                while (board.getInput() != 'p');
+
+                // Esce dalla pausa
+                isPaused = false;
+                board.setTimeout(currentSpeed);
+                redraw(); // Ridisegna per togliere "PAUSA"
+            }
             break;
+
         default: break;
     }
 }
@@ -98,12 +120,10 @@ void SnakeGame::updateSnakePosition() {
 }
 
 void SnakeGame::updateState() {
-    if (game_over) return;
+    if (game_over || isPaused) return; // Non aggiornare se in pausa
 
     tickCount++;
 
-    // tempo in secondi
-    //int elapsed = (tickCount * currentSpeed) / 1000;
     int elapsed = static_cast<int>(time(nullptr) - startTime);
     int remaining = timeLimit - elapsed;
 
@@ -124,11 +144,45 @@ void SnakeGame::redraw() {
     int elapsed = static_cast<int>(time(nullptr) - startTime);
     int remaining = timeLimit - elapsed;
 
+    int terminalHeight, terminalWidth;
+    getmaxyx(stdscr, terminalHeight, terminalWidth);
+    // Posiziona la scritta sotto l'HUD
+    int hudWidth = 25;
+    int hudHeight = 5;
+    int hudX = terminalWidth - hudWidth - 2;
+    int hudY = 1;
+
+    // Posizione per la scritta PAUSA (sotto l'HUD)
+    int pauseY = hudY + hudHeight + 1;
+    int pauseX = hudX + (hudWidth - 5) / 2; // Centra la scritta "PAUSA"
+
     // stampa punteggio e tempo rimanente in alto
     mvwprintw(hud, 1, 1, "Score: %d", score);
     mvwprintw(hud, 2, 1, "Time left: %02d", remaining);
+    mvwprintw(hud, 3, 1, "Speed: %dms", currentSpeed);
     wrefresh(hud);
+
+    // Se è in pausa, mostra la scritta "PAUSA" sotto l'HUD
+    if (isPaused) {
+        int terminalHeight, terminalWidth;
+        getmaxyx(stdscr, terminalHeight, terminalWidth);
+
+        // Stampa la scritta PAUSA
+        attron(A_BOLD | A_BLINK); // Grassetto e lampeggiante per enfasi
+        mvprintw(pauseY, pauseX, "PAUSA");
+        attroff(A_BOLD | A_BLINK);
+        refresh();
+    } else {
+        // Se non è in pausa, cancella la scritta PAUSA (se c'era)
+        int terminalHeight, terminalWidth;
+        getmaxyx(stdscr, terminalHeight, terminalWidth);
+
+        // Cancella la scritta PAUSA con spazi
+        mvprintw(pauseY, pauseX, "     "); // 5 spazi per "PAUSA"
+        refresh();
+    }
 }
+
 
 void SnakeGame::setGameSpeed(int speed) {
     currentSpeed = speed;
