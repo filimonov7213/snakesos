@@ -62,7 +62,7 @@ void Game::askPlayerName() {
 
 void Game::start() {
     // Chiedi il nome del giocatore all'inizio
-    //askPlayerName();
+    askPlayerName();
 
     Livello* current = head;
     int totalScore = 0;
