@@ -62,21 +62,40 @@ void Leaderboard::addScore(const std::string& name, int score) {
 }
 
 void Leaderboard::show() const {
-    clear();
-    mvprintw(5, 10, "===== CLASSIFICA TOP 10 =====");
-    //mvprintw(6, 10, "File: %s", file.c_str());
+    // Salva lo stato corrente dell'input
+    int old_flags = curs_set(0); // Nascondi cursore
+    bool old_echo = (echo() == OK);
+    if (old_echo) noecho();
 
-    int y = 8;
+    clear();
+    refresh();
+
+    // Mostra la classifica
+    mvprintw(5, 10, "===== CLASSIFICA TOP 10 =====");
+
+    int y = 7;
     if (scores.empty()) {
-        mvprintw(8, 10, "Nessun punteggio registrato!");
-        //mvprintw(9, 10, "Il file potrebbe non esistere o essere vuoto");
+        mvprintw(y++, 10, "Nessun punteggio registrato!");
     } else {
         for (size_t i = 0; i < scores.size(); ++i) {
-            mvprintw(y++, 10, "%2zu. %-10s %5d", i+1, scores[i].name.c_str(), scores[i].score);
+            mvprintw(y++, 10, "%2zu. %-15s %5d",
+                    i+1, scores[i].name.c_str(), scores[i].score);
         }
     }
-    
-    refresh();
+
     mvprintw(y+2, 10, "Premi un tasto per tornare al menu...");
-    getch();
+    refresh();
+
+    // Pulisce il buffer di input e aspetta realmente
+    flushinp(); // Pulisce il buffer di input
+    timeout(-1); // Modalità bloccante
+    getch();     // Aspetta un input reale
+    timeout(0);  // Ritorna a non bloccante
+
+    // Ripristina lo stato originale
+    if (old_echo) echo();
+    curs_set(0); // Mantieni cursore nascosto
+
+    clear();
+    refresh();
 }

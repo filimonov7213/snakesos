@@ -22,6 +22,7 @@ public:
 private:
     void createApple();
     void destroyApple();
+    void showPauseMenu();
     void updateSnakePosition();
 
     Board board;

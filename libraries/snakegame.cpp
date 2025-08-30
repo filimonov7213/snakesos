@@ -1,6 +1,8 @@
 #include "snakegame.h"
 #include "empty.h"
 #include <cstdlib>
+#include <string>
+#include <cstring>
 
 SnakeGame::SnakeGame(int height, int width, int timeLimit, int appleFactor)
     : board(height, width), apple(nullptr), game_over(false),
@@ -60,42 +62,151 @@ void SnakeGame::processInput() {
         case KEY_LEFT:  case 'a': snake.setDirection(left); break;
         case KEY_RIGHT: case 'd': snake.setDirection(right); break;
         case 'p': // pausa
-            board.setTimeout(-1);
-            while (board.getInput() != 'p');
-            board.setTimeout(currentSpeed);
+        case 'P':
+            showPauseMenu();
             break;
         default: break;
     }
 }
 
+void SnakeGame::showPauseMenu() {
+    // Salva lo stato corrente del timeout
+    board.setTimeout(-1);
+    flushinp();
+
+    // 👇 CREA UN OVERLAY SCURO SU TUTTO LO SCHERMO
+    WINDOW* overlay_win = newwin(board.getHeight(), board.getWidth(), 0, 0);
+    for (int y = 0; y < board.getHeight(); y++) {
+        for (int x = 0; x < board.getWidth(); x++) {
+            mvwprintw(overlay_win, y, x, " ");
+        }
+    }
+    wbkgd(overlay_win, A_REVERSE); // 👈 Effetto scuro
+    wrefresh(overlay_win);
+
+    // 👇 CREA IL MENU DI PAUSA CENTRATO
+    int menu_height = 5;
+    int menu_width = 20;
+    int start_y = (board.getHeight() - menu_height) / 2;
+    int start_x = (board.getWidth() - menu_width) / 2;
+
+    WINDOW* pause_win = newwin(menu_height, menu_width, start_y, start_x);
+    keypad(pause_win, TRUE);
+
+    // 👇 SFONDO DEL MENU
+    wbkgd(pause_win, A_NORMAL);
+    wattron(pause_win, A_BOLD);
+    box(pause_win, 0, 0);
+    wattroff(pause_win, A_BOLD);
+
+    // Titolo centrato
+    const char* title = "PAUSA";
+    mvwprintw(pause_win, 1, (menu_width - strlen(title)) / 2, "%s", title);
+
+    // Opzioni del menu
+    const char* options[2] = {"Riprendi", "Menu principale"};
+    int highlight = 0;
+
+    while (true) {
+        // Disegna le opzioni centrate
+        for (int i = 0; i < 2; i++) {
+            int x_pos = (menu_width - strlen(options[i])) / 2;
+            if (i == highlight) {
+                wattron(pause_win, A_REVERSE);
+            }
+            mvwprintw(pause_win, i + 2, x_pos, "%s", options[i]);
+            wattroff(pause_win, A_REVERSE);
+        }
+        wrefresh(pause_win);
+
+        // Input con W/S
+        int ch = wgetch(pause_win);
+        switch (ch) {
+            case 'w': case 'W': case KEY_UP:
+                highlight = (highlight - 1 + 2) % 2;
+                break;
+            case 's': case 'S': case KEY_DOWN:
+                highlight = (highlight + 1) % 2;
+                break;
+            case 10: case ' ': // ENTER o SPACE
+                delwin(pause_win);
+                delwin(overlay_win);
+                touchwin(stdscr);
+                refresh();
+                flushinp();
+                board.setTimeout(currentSpeed);
+                if (highlight == 1) forceGameOver();
+                return;
+            case 'p': case 'P': case 27: // P o ESC per riprendere
+                delwin(pause_win);
+                delwin(overlay_win);
+                touchwin(stdscr);
+                refresh();
+                flushinp();
+                board.setTimeout(currentSpeed);
+                return;
+        }
+    }
+}
+
 void SnakeGame::updateSnakePosition() {
-    int tailY = snake.getBodyY(Snake::FIXED_LENGTH - 1);
-    int tailX = snake.getBodyX(Snake::FIXED_LENGTH - 1);
+    // Salva la posizione della coda prima di muovere
+    int oldTailY = snake.getTailY();
+    int oldTailX = snake.getTailX();
 
-    snake.move();
-
-    int headY = snake.getHeadY();
-    int headX = snake.getHeadX();
-
-    chtype nextChar = board.getCharAt(headY, headX);
-
-    if (nextChar == 'A') {
-        destroyApple();
-        createApple();
-        score += appleFactor;
-    } else if (snake.isAt(headY, headX)) {
-        // Collisione con se stesso
+    // move() ritorna false se c'è collisione col corpo
+    if (!snake.move()) {
         game_over = true;
         return;
     }
 
-    board.addAt(tailY, tailX, ' ');
-    for (int i = Snake::FIXED_LENGTH - 2; i > 0; i--) {
-        board.addAt(snake.getBodyY(i), snake.getBodyX(i), 'o');
+    int headY = snake.getHeadY();
+    int headX = snake.getHeadX();
+
+    // Controllo mela
+    bool ateApple = false;
+    if (apple && headY == apple->getY() && headX == apple->getX()) {
+        destroyApple();
+        createApple();
+        score += appleFactor;
+        ateApple = true;
     }
-    board.addAt(snake.getBodyY(0), snake.getBodyX(0), 'o');
-    board.addAt(headY, headX, 'O');
+
+    // Pulisci solo la vecchia coda se NON ha mangiato la mela
+    if (!ateApple) {
+        board.addAt(oldTailY, oldTailX, ' ');
+    }
+
+    // Prima pulisci tutte le posizioni del serpente
+    for (int y = 0; y < board.getHeight(); y++) {
+        for (int x = 0; x < board.getWidth(); x++) {
+            chtype ch = board.getCharAt(y, x);
+            if (ch == 'o' || ch == 'O') {
+                board.addAt(y, x, ' ');
+            }
+        }
+    }
+
+    // Ora ridisegna tutto il serpente
+    for (int i = 0; i < Snake::FIXED_LENGTH; i++) {
+        int bodyY = snake.getBodyY(i);
+        int bodyX = snake.getBodyX(i);
+
+        // Controlla che le coordinate siano valide
+        if (bodyY >= 0 && bodyY < board.getHeight() &&
+            bodyX >= 0 && bodyX < board.getWidth()) {
+
+            if (i == 0) {
+                // Testa
+                board.addAt(bodyY, bodyX, 'O');
+            } else {
+                // Corpo
+                board.addAt(bodyY, bodyX, 'o');
+            }
+        }
+    }
 }
+
 
 void SnakeGame::updateState() {
     if (game_over) return;

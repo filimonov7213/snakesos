@@ -38,46 +38,52 @@ int main() {
 #include "menu.h"
 #include "game.h"
 #include "leaderboard.h"
+#include <iostream>
 
-int main() {
+void cleanupNcurses() {
+  endwin();
+}
+
+void initNcurses() {
   initscr();
   noecho();
   cbreak();
   curs_set(0);
   keypad(stdscr, TRUE);
+  timeout(0);
 
-  // Colori se supportati
+  // Inizializza colori se supportati
   if (has_colors()) {
     start_color();
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
   }
+}
 
+int main() {
   bool running = true;
 
-  try {
-    while (running) {
-      Menu menu;
-      int choice = menu.show();
+  while (running) {
+    // Inizializza ncurses ad ogni ciclo
+    initNcurses();
 
-      if (choice == 0) {
-        Game game;
-        game.start();
-      }
-      else if (choice == 1) {
-        Leaderboard leaderboard("../scoreboard/scoreboard.txt");
-        leaderboard.show();
-      }
-      else {
-        running = false;
-      }
+    Menu menu;
+    int choice = menu.show();
+
+    if (choice == 0) {
+      Game game;
+      game.start();
     }
-  }
-  catch (...) {
-    endwin();
-    std::cout << "Errore durante l'esecuzione" << std::endl;
-    return 1;
+    else if (choice == 1) {
+      Leaderboard leaderboard("../scoreboard/scoreboard.txt");
+      leaderboard.show();
+    }
+    else {
+      running = false;
+    }
+
+    // Pulisci completamente ncurses prima del prossimo ciclo
+    cleanupNcurses();
   }
 
-  endwin();
   return 0;
 }

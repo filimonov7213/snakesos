@@ -25,7 +25,7 @@ public:
     Direction getDirection() const;
 
     // sposta: rimuove la coda (false nella matrice), aggiunge la testa (true)
-    void move();
+    bool move();
 
     // occupancy (matrice booleana): true se lo snake occupa (y,x)
     bool isAt(int y, int x) const;

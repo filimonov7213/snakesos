@@ -51,14 +51,21 @@ void Snake::initialize(int startY, int startX, int height, int width) {
     boardHeight = height;
     boardWidth = width;
 
-    // FIFO: 0 testa, poi corpo verso sinistra
-    segY[0] = headY;     segX[0] = headX;
-    segY[1] = headY;     segX[1] = headX - 1;
-    segY[2] = headY;     segX[2] = headX - 2;
-    segY[3] = headY;     segX[3] = headX - 3;
-
+    // Inizializza il campo di occupazione
+    setFieldSize(height, width);
     clearOcc();
-    for (int i = 0; i < FIXED_LENGTH; ++i) {
+
+    // Inizializza le posizioni del serpente
+    for (int i = 0; i < FIXED_LENGTH; i++) {
+        segY[i] = headY;
+        segX[i] = headX - i;
+
+        // Gestione wrap-around per le posizioni iniziali
+        if (segX[i] < 0) {
+            segX[i] += boardWidth;
+        }
+
+        // Segna come occupato
         if (segY[i] >= 0 && segY[i] < fieldH && segX[i] >= 0 && segX[i] < fieldW) {
             occ[segY[i]][segX[i]] = true;
         }
@@ -80,13 +87,11 @@ Direction Snake::getDirection() const {
     return cur_dir;
 }
 
-void Snake::move() {
-    // Applica la direzione richiesta
+bool Snake::move() {
     cur_dir = next_dir;
 
-    // calcola nuova testa
-    int ny = headY;
-    int nx = headX;
+    // calcolo nuova testa
+    int ny = headY, nx = headX;
     switch (cur_dir) {
         case up:    ny--; break;
         case down:  ny++; break;
@@ -94,37 +99,47 @@ void Snake::move() {
         case right: nx++; break;
     }
 
-    // Wrap-around
+    // wrap-around
     if (ny < 0) ny = boardHeight - 1;
     else if (ny >= boardHeight) ny = 0;
-
     if (nx < 0) nx = boardWidth - 1;
     else if (nx >= boardWidth) nx = 0;
 
-    // rimuovi coda dalla matrice
+    // Controlla collisione PRIMA di rimuovere la coda
+    if (occ[ny][nx]) {
+        return false; // collisione con il corpo
+    }
+
+    // 👇 Rimuovi la coda dall'occupazione SOLO DOPO aver controllato
     int tailY = segY[FIXED_LENGTH - 1];
     int tailX = segX[FIXED_LENGTH - 1];
     if (tailY >= 0 && tailY < fieldH && tailX >= 0 && tailX < fieldW) {
         occ[tailY][tailX] = false;
     }
 
-    // shift FIFO
+    // shift corpo
     for (int i = FIXED_LENGTH - 1; i > 0; --i) {
         segY[i] = segY[i - 1];
         segX[i] = segX[i - 1];
     }
 
-    // aggiorna testa
+    // nuova testa
     segY[0] = ny;
     segX[0] = nx;
     headY = ny;
     headX = nx;
 
-    // marca testa nella matrice
+    // segna testa nella matrice
     if (ny >= 0 && ny < fieldH && nx >= 0 && nx < fieldW) {
         occ[ny][nx] = true;
     }
+
+    return true;
 }
+
+
+
+
 
 
 bool Snake::isAt(int y, int x) const {
