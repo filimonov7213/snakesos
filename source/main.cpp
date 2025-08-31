@@ -68,45 +68,30 @@ void initNcurses() {
 }
 
 int main() {
-  std::cout << "Inizializzazione ncurses..." << std::endl;
-  initscr();
-  std::cout << "ncurses inizializzato" << std::endl;
-
-  noecho();
-  cbreak();
-  curs_set(0);
-  keypad(stdscr, TRUE);
-  timeout(0);
-
-  std::cout << "Configurazione completata" << std::endl;
-
   bool running = true;
 
   while (running) {
-    std::cout << "Creazione menu..." << std::endl;
-    Menu menu;
-    std::cout << "Menu creato" << std::endl;
+    // Inizializza ncurses ad ogni ciclo
+    initNcurses();
 
+    Menu menu;
     int choice = menu.show();
-    std::cout << "Scelta menu: " << choice << std::endl;
 
     if (choice == 0) {
-      std::cout << "Avvio gioco..." << std::endl;
       Game game;
       game.start();
-      std::cout << "Gioco terminato" << std::endl;
     }
     else if (choice == 1) {
-      std::cout << "Mostro classifica..." << std::endl;
-      Leaderboard leaderboard("scoreboard.txt");
+      Leaderboard leaderboard("scoreboard/scoreboard.txt");
       leaderboard.show();
-      std::cout << "Classifica mostrata" << std::endl;
     }
     else {
       running = false;
     }
+
+    // Pulisci completamente ncurses prima del prossimo ciclo
+    cleanupNcurses();
   }
 
-  endwin();
   return 0;
 }
