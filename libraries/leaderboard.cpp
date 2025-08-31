@@ -1,7 +1,7 @@
 #include "leaderboard.h"
 #include <fstream>
 #include <algorithm>
-#include <curses.h>
+#include <ncurses.h>
 #include <iostream>
 
 Leaderboard::Leaderboard(const std::string& filename) : file(filename) {

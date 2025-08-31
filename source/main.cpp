@@ -34,7 +34,7 @@ int main() {
   }
 }*/
 //ciao
-#include <curses.h>
+#include <ncurses.h>
 #include "menu.h"
 #include "game.h"
 #include "leaderboard.h"

@@ -1,5 +1,5 @@
 #include "game.h"
-#include <curses.h>
+#include <ncurses.h>
 #include "leaderboard.h"
 #include <string>
 #include <iostream>
