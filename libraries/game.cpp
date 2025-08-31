@@ -83,16 +83,6 @@ void Game::askPlayerName() {
 
 void Game::start() {
 
-    // 👇 SOLUZIONE SICURA PER LINUX
-    def_prog_mode();    // Salva lo stato terminale
-    endwin();           // Esci da ncurses temporaneamente
-
-    std::cout << "Gioco iniziato! Premi INVIO per continuare..." << std::endl;
-    std::cin.ignore();
-
-    reset_prog_mode();  // Torna a ncurses
-    refresh();
-
     def_prog_mode();
     askPlayerName();
 
