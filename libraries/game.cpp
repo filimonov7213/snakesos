@@ -1,5 +1,5 @@
 #include "game.h"
-#include <ncurses.h>
+#include <curses.h>
 #include "leaderboard.h"
 #include <string>
 #include <iostream>
@@ -97,13 +97,13 @@ void Game::start() {
         game.setGameSpeed(current->getSpeed());
 
         while (!game.isOver()) {
-            flushinp();
+            //flushinp();
             game.processInput();
             game.updateState();
             game.redraw();
             napms(10);
         }
-        flushinp();
+        //flushinp();
 
         int levelScore = game.getScore();
         totalScore += levelScore;
@@ -120,7 +120,7 @@ void Game::start() {
             mvprintw(17, 10, "Premi un tasto per vedere la classifica...");
             refresh();
 
-            flushinp();
+            //flushinp();
             timeout(-1);
             getch();
             timeout(0);
@@ -179,7 +179,7 @@ void Game::start() {
         mvprintw(13, 10, "Premi un tasto per vedere la classifica...");
         refresh();
 
-        flushinp();
+        //flushinp();
         timeout(-1);
         getch();
         timeout(0);

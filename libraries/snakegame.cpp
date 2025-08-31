@@ -24,18 +24,18 @@ void SnakeGame::initialize() {
     game_over = false;
     tickCount = 0;
 
-    // 👇 CREA HUD CON CONTROLLO
+    // CREA HUD CON CONTROLLO
     hud = newwin(3, 30, 0, board.getWidth() + 2);
     if (!hud) {
         game_over = true;
         return;
     }
 
-    // 👇 INIZIALIZZA SNAKE CON CONTROLLO
+    // INIZIALIZZA SNAKE CON CONTROLLO
     snake.initialize(board.getHeight() / 2, board.getWidth() / 2,
                     board.getHeight(), board.getWidth());
 
-    // 👇 DISEGNA SNAKE INIZIALE
+    // DISEGNA SNAKE INIZIALE
     board.addAt(snake.getHeadY(), snake.getHeadX(), 'O');
     board.drawBorder();
     for (int i = 0; i < Snake::FIXED_LENGTH - 1; i++) {
@@ -97,7 +97,7 @@ void SnakeGame::processInput() {
 void SnakeGame::showPauseMenu() {
     // Salva lo stato corrente del timeout
     board.setTimeout(-1);
-    flushinp();
+    //flushinp();
 
     // OTTIENI LE DIMENSIONI REALI DEL TERMINALE
     int screen_height, screen_width;
@@ -163,7 +163,7 @@ void SnakeGame::showPauseMenu() {
                 delwin(overlay_win);
                 touchwin(stdscr);
                 refresh();
-                flushinp();
+                //flushinp();
                 board.setTimeout(currentSpeed);
                 if (highlight == 1) forceGameOver();
                 return;
@@ -172,7 +172,7 @@ void SnakeGame::showPauseMenu() {
                 delwin(overlay_win);
                 touchwin(stdscr);
                 refresh();
-                flushinp();
+                //flushinp();
                 board.setTimeout(currentSpeed);
                 return;
         }

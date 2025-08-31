@@ -1,7 +1,7 @@
 #include "leaderboard.h"
 #include <fstream>
 #include <algorithm>
-#include <ncurses.h>
+#include <curses.h>
 #include <iostream>
 
 Leaderboard::Leaderboard(const std::string& filename) : file(filename) {
@@ -87,7 +87,7 @@ void Leaderboard::show() const {
     refresh();
 
     // Pulisce il buffer di input e aspetta realmente
-    flushinp(); // Pulisce il buffer di input
+    //flushinp(); // Pulisce il buffer di input
     timeout(-1); // Modalità bloccante
     getch();     // Aspetta un input reale
     timeout(0);  // Ritorna a non bloccante

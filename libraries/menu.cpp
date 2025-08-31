@@ -3,7 +3,7 @@
 //
 
 #include "menu.h"
-#include <ncurses.h>
+#include <curses.h>
 
 Menu::Menu() {
     options[0] = "Nuova Partita";
