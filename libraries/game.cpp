@@ -96,11 +96,13 @@ void Game::start() {
         game.setGameSpeed(current->getSpeed());
 
         while (!game.isOver()) {
+            flushinp();
             game.processInput();
             game.updateState();
             game.redraw();
             napms(10);
         }
+        flushinp();
 
         int levelScore = game.getScore();
         totalScore += levelScore;
@@ -122,7 +124,7 @@ void Game::start() {
             getch();
             timeout(0);
 
-            Leaderboard leaderboard("../scoreboard/scoreboard.txt");
+            Leaderboard leaderboard("scoreboard/scoreboard.txt");
             leaderboard.addScore(playerName, totalScore); // Aggiungi anche se 0
             leaderboard.show();
 
@@ -162,7 +164,7 @@ void Game::start() {
 
     // MOSTRA CLASSIFICA SE ESCI PRIMA DEL TEMPO
     if (last_choice == 1) {
-        Leaderboard leaderboard("../scoreboard/scoreboard.txt");
+        Leaderboard leaderboard("scoreboard/scoreboard.txt");
         leaderboard.addScore(playerName, totalScore);
 
         clear();

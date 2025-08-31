@@ -56,17 +56,23 @@ void SnakeGame::destroyApple() {
 
 void SnakeGame::processInput() {
     chtype input = board.getInput();
+
+    // DISABILITA L'ECHO AUTOMATICO DEI TASTI
+    noecho(); // Importante: previene la stampa dei caratteri
+
     switch (input) {
         case KEY_UP:    case 'w': snake.setDirection(up); break;
         case KEY_DOWN:  case 's': snake.setDirection(down); break;
         case KEY_LEFT:  case 'a': snake.setDirection(left); break;
         case KEY_RIGHT: case 'd': snake.setDirection(right); break;
-        case 'p': // pausa
-        case 'P':
+        case 'p': case 'P':
             showPauseMenu();
-            break;
+        break;
         default: break;
     }
+
+    // RIPRISTINA L'ECHO SOLO SE NECESSARIO
+    // noecho() rimane disattivato per il gioco
 }
 
 void SnakeGame::showPauseMenu() {
@@ -74,27 +80,32 @@ void SnakeGame::showPauseMenu() {
     board.setTimeout(-1);
     flushinp();
 
-    // 👇 CREA UN OVERLAY SCURO SU TUTTO LO SCHERMO
-    WINDOW* overlay_win = newwin(board.getHeight(), board.getWidth(), 0, 0);
-    for (int y = 0; y < board.getHeight(); y++) {
-        for (int x = 0; x < board.getWidth(); x++) {
+    // OTTIENI LE DIMENSIONI REALI DEL TERMINALE
+    int screen_height, screen_width;
+    getmaxyx(stdscr, screen_height, screen_width);
+
+    // CREA UN OVERLAY SU TUTTO LO SCHERMO
+    WINDOW* overlay_win = newwin(screen_height, screen_width, 0, 0);
+    wbkgd(overlay_win, COLOR_PAIR(2)); // Usa un colore scuro
+    wattron(overlay_win, A_DIM);
+    for (int y = 0; y < screen_height; y++) {
+        for (int x = 0; x < screen_width; x++) {
             mvwprintw(overlay_win, y, x, " ");
         }
     }
-    wbkgd(overlay_win, A_REVERSE); // 👈 Effetto scuro
     wrefresh(overlay_win);
 
-    // 👇 CREA IL MENU DI PAUSA CENTRATO
-    int menu_height = 5;
-    int menu_width = 20;
-    int start_y = (board.getHeight() - menu_height) / 2;
-    int start_x = (board.getWidth() - menu_width) / 2;
+    // CREA IL MENU DI PAUSA CENTRATO SULLO SCHERMO
+    int menu_height = 7;
+    int menu_width = 30;
+    int start_y = (screen_height - menu_height) / 2;
+    int start_x = (screen_width - menu_width) / 2;
 
     WINDOW* pause_win = newwin(menu_height, menu_width, start_y, start_x);
     keypad(pause_win, TRUE);
 
-    // 👇 SFONDO DEL MENU
-    wbkgd(pause_win, A_NORMAL);
+    // SFONDO DEL MENU
+    wbkgd(pause_win, COLOR_PAIR(1));
     wattron(pause_win, A_BOLD);
     box(pause_win, 0, 0);
     wattroff(pause_win, A_BOLD);
@@ -114,7 +125,7 @@ void SnakeGame::showPauseMenu() {
             if (i == highlight) {
                 wattron(pause_win, A_REVERSE);
             }
-            mvwprintw(pause_win, i + 2, x_pos, "%s", options[i]);
+            mvwprintw(pause_win, i + 3, x_pos, "%s", options[i]);
             wattroff(pause_win, A_REVERSE);
         }
         wrefresh(pause_win);
