@@ -87,7 +87,7 @@ int main() {
       game.start();
     }
     else if (choice == 1) {
-      Leaderboard leaderboard("scoreboard/scoreboard.txt");
+      Leaderboard leaderboard("../scoreboard/scoreboard.txt");
       leaderboard.show();
     }
     else {

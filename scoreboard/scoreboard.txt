@@ -1,10 +1,1 @@
-sd 25
-d 12
-d 7
-eugen 3
-dffff 2
-uio 2
-victor 2
-i 2
-dddiii 1
-victor 1
+ddddddd 0
