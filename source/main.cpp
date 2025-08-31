@@ -45,6 +45,14 @@ void cleanupNcurses() {
 }
 
 void initNcurses() {
+  setlocale(LC_ALL, ""); // Importante per Linux
+  initscr();
+
+  if (!stdscr) {
+    std::cerr << "Errore: impossibile inizializzare ncurses!" << std::endl;
+    return;
+  }
+
   initscr();
   noecho();
   cbreak();
