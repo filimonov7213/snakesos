@@ -12,8 +12,16 @@ Board::Board(int height, int width) {
 }
 
 void Board::initialize() {
-    clear();
-    refresh();
+    // CREA FINESTRA CON CONTROLLO
+    window = newwin(height, width, 0, 0);
+    if (!window) {
+        // Fallback: usa stdscr se newwin fallisce
+        window = stdscr;
+    }
+
+    keypad(window, TRUE);
+    nodelay(window, TRUE);
+    wtimeout(window, 0);
 }
 
 void Board::addBorder() {

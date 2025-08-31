@@ -17,18 +17,25 @@ SnakeGame::~SnakeGame() {
 
 void SnakeGame::initialize() {
     destroyApple();
+
+    // 👇 INIZIALIZZA BOARD CON CONTROLLO
     board.initialize();
+
     game_over = false;
     tickCount = 0;
-    //score = 0;
-    hud = newwin(3, 30, 0, board.getWidth() + 2); // 3 righe, 30 colonne a destra del campo
-//    appleFactor = 10;
 
-    // inizializza snake al centro
+    // 👇 CREA HUD CON CONTROLLO
+    hud = newwin(3, 30, 0, board.getWidth() + 2);
+    if (!hud) {
+        game_over = true;
+        return;
+    }
+
+    // 👇 INIZIALIZZA SNAKE CON CONTROLLO
     snake.initialize(board.getHeight() / 2, board.getWidth() / 2,
-                 board.getHeight(), board.getWidth());
+                    board.getHeight(), board.getWidth());
 
-    // disegna snake iniziale
+    // 👇 DISEGNA SNAKE INIZIALE
     board.addAt(snake.getHeadY(), snake.getHeadX(), 'O');
     board.drawBorder();
     for (int i = 0; i < Snake::FIXED_LENGTH - 1; i++) {
@@ -40,9 +47,21 @@ void SnakeGame::initialize() {
 
 void SnakeGame::createApple() {
     int y, x;
+    int attempts = 0;
+    const int max_attempts = 100;
+
+    // LIMITA TENTATIVI PER EVITARE LOOP INFINITI
     do {
         board.getEmptyCoordinates(y, x);
+        attempts++;
+        if (attempts > max_attempts) {
+            // Fallback: usa posizione fissa
+            y = board.getHeight() / 3;
+            x = board.getWidth() / 3;
+            break;
+        }
     } while (snake.isAt(y, x));
+
     apple = new Apple(y, x);
     board.add(*apple);
 }
