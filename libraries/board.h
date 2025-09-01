@@ -35,6 +35,8 @@ public:
 
     void drawBorder();
 
+    WINDOW* getWindow() const { return board_win; }
+
     //for the implementation of PAUSE
     void setTimeout(int timeout);
 

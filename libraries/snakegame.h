@@ -24,6 +24,7 @@ private:
     void destroyApple();
     void showPauseMenu();
     void updateSnakePosition();
+    void drawGreenBorder();
 
     Board board;
     Snake snake;
@@ -36,6 +37,8 @@ private:
     int appleFactor;    // moltiplicatore punti per mela
     int score;          // punteggio corrente
     bool game_over;
+    int borderFlashCount;  // Contatore per l'effetto flash
+    bool borderGreen;      // Stato del bordo verde
     time_t startTime;   // tempo dallo start
 
 };

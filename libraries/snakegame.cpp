@@ -6,8 +6,17 @@
 
 SnakeGame::SnakeGame(int height, int width, int timeLimit, int appleFactor)
     : board(height, width), apple(nullptr), game_over(false),
-      currentSpeed(200), timeLimit(timeLimit), appleFactor(appleFactor), score(0) {
+      currentSpeed(200), timeLimit(timeLimit), appleFactor(appleFactor),
+      score(0), borderFlashCount(0), borderGreen(false) {
+
     startTime = time(nullptr);
+
+    // INIZIALIZZA COLORI SE SUPPORTATI
+    if (has_colors()) {
+        init_pair(1, COLOR_WHITE, COLOR_BLACK); // Normale
+        init_pair(2, COLOR_GREEN, COLOR_BLACK); // Verde
+    }
+
     initialize();
 }
 
@@ -211,6 +220,10 @@ void SnakeGame::updateSnakePosition() {
         createApple();
         score += appleFactor;
         ateApple = true;
+
+        // ATTIVA EFFETTO BORDO VERDE
+        borderFlashCount = 10;
+        borderGreen = true;
     }
 
     // Pulisci solo la vecchia coda se NON ha mangiato la mela
@@ -244,6 +257,14 @@ void SnakeGame::updateSnakePosition() {
                 // Corpo
                 board.addAt(bodyY, bodyX, 'o');
             }
+            }
+    }
+
+    // GESTISCI EFFETTO BORDO VERDE
+    if (borderFlashCount > 0) {
+        borderFlashCount--;
+        if (borderFlashCount == 0) {
+            borderGreen = false;
         }
     }
 }
@@ -273,6 +294,12 @@ void SnakeGame::redraw() {
     //werase(hud);
     //box(hud, 0, 0);
 
+    if (borderGreen && borderFlashCount > 0) {
+        drawGreenBorder(); // Bordo verde
+    } else {
+        board.drawBorder(); // Bordo normale
+    }
+
     int elapsed = static_cast<int>(time(nullptr) - startTime);
     int remaining = timeLimit - elapsed;
 
@@ -291,6 +318,43 @@ void SnakeGame::redraw() {
     mvwprintw(stdscr, infoY, startX, "Score: %d", score);
     mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time left: %d", remaining);
     wrefresh(stdscr);
+}
+
+void SnakeGame::drawGreenBorder() {
+    WINDOW* win = board.getWindow(); // Usa il nuovo metodo
+    if (!win) return;
+
+    int height = board.getHeight();
+    int width = board.getWidth();
+
+    // USA I COLORI SE SUPPORTATI
+    if (has_colors()) {
+        wattron(win, COLOR_PAIR(2)); // Verde
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (y == 0 || y == height - 1 || x == 0 || x == width - 1) {
+                    chtype current = mvwinch(win, y, x);
+                    if (current != 'O' && current != 'o') {
+                        mvwaddch(win, y, x, '*');
+                    }
+                }
+            }
+        }
+        wattroff(win, COLOR_PAIR(2));
+    } else {
+        // FALLBACK: carattere speciale per bordo verde
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (y == 0 || y == height - 1 || x == 0 || x == width - 1) {
+                    chtype current = mvwinch(win, y, x);
+                    if (current != 'O' && current != 'o') {
+                        mvwaddch(win, y, x, '#'); // Carattere speciale
+                    }
+                }
+            }
+        }
+    }
+    wrefresh(win);
 }
 
 void SnakeGame::setGameSpeed(int speed) {
