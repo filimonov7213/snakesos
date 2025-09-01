@@ -12,7 +12,7 @@ public:
     void addBorder();
 
     //descriptive method: move cursor to a (y, x) point in the window and add a character
-    void addAt(int y, int x, char ch);
+    void addAt(int y, int x, chtype ch);
 
     //returns the input key or character read from the window and gives a free refresh
     chtype getInput();

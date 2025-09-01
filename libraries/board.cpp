@@ -12,8 +12,6 @@ Board::Board(int height, int width) {
 }
 
 void Board::initialize() {
-    // CREA FINESTRA CON CONTROLLO
-    board_win = newwin(height, width, 0, 0);
     if (!board_win) {
         // Fallback: usa stdscr se newwin fallisce
         board_win = stdscr;
@@ -28,7 +26,7 @@ void Board::addBorder() {
     box(board_win, 0, 0);
 }
 
-void Board::addAt(int y, int x, char ch) {
+void Board::addAt(int y, int x, chtype ch) {
     mvwaddch(board_win, y, x, ch);
 }
 
@@ -81,7 +79,7 @@ void Board::construct(int height, int width) {
     this->height = height;
     this->width = width;
 
-    board_win = newwin(height, width, (yMax / 2) - (height / 2), (xMax / 2) - (width / 2));
+    board_win = newwin(height, width, (yMax-height)/2, (xMax - width)/2);
     //wtimeout(board_win, 500); //makes the board refresh every ms
     keypad(board_win, true);
 }

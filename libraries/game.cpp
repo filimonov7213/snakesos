@@ -6,9 +6,9 @@
 
 Game::Game() : playerName("") {
     // creo la lista doppiamente collegata con tempo limite per livello
-    Livello* lvl1 = new Livello(1, 200, 30, 60, 20, 1);   // lento - 20 secondi
-    Livello* lvl2 = new Livello(2, 100, 30, 60, 30, 3);   // medio - 30 secondi
-    Livello* lvl3 = new Livello(3, 50,  30, 60, 40, 5);   // veloce - 40 secondi
+    Livello* lvl1 = new Livello(1, 200, 20, 60, 20, 1);   // lento - 20 secondi
+    Livello* lvl2 = new Livello(2, 100, 20, 60, 30, 3);   // medio - 30 secondi
+    Livello* lvl3 = new Livello(3, 50,  20, 60, 40, 5);   // veloce - 40 secondi
 
     // collegamenti
     lvl1->next = lvl2;

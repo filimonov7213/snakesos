@@ -25,7 +25,7 @@ void SnakeGame::initialize() {
     tickCount = 0;
 
     // CREA HUD CON CONTROLLO
-    hud = newwin(3, 30, 0, board.getWidth() + 2);
+    hud = newwin(4, 30, 0, board.getWidth() + 2);
     if (!hud) {
         game_over = true;
         return;
@@ -74,6 +74,17 @@ void SnakeGame::destroyApple() {
 }
 
 void SnakeGame::processInput() {
+
+    int headY = snake.getHeadY();
+    int headX = snake.getHeadX();
+
+    bool is_head_on_border = (headY == 0 || headY == board.getHeight() - 1 ||
+                             headX == 0 || headX == board.getWidth() - 1);
+
+    if (is_head_on_border) {
+        return; // BLOCCA TUTTI GLI INPUT QUANDO SUL BORDO
+    }
+
     chtype input = board.getInput();
 
     // DISABILITA L'ECHO AUTOMATICO DEI TASTI
@@ -259,16 +270,27 @@ void SnakeGame::updateState() {
 void SnakeGame::redraw() {
     board.drawBorder();
     board.refresh();
-    werase(hud);
-    box(hud, 0, 0);
+    //werase(hud);
+    //box(hud, 0, 0);
 
     int elapsed = static_cast<int>(time(nullptr) - startTime);
     int remaining = timeLimit - elapsed;
 
     // stampa punteggio e tempo rimanente in alto
-    mvwprintw(hud, 1, 1, "Score: %d", score);
-    mvwprintw(hud, 2, 1, "Time left: %02d", remaining);
-    wrefresh(hud);
+    //mvwprintw(hud, 1, 1, "Score: %d", score);
+    //mvwprintw(hud, 2, 1, "Time left: %02d", remaining);
+    //wrefresh(hud);
+
+    //prova printing sotto la board principale
+    int xMax, yMax;
+    getmaxyx(stdscr, yMax, xMax);
+    int startY = (yMax - board.getHeight()) / 2;
+    int startX = (xMax - board.getWidth()) / 2;
+    int infoY = startY + board.getHeight();
+
+    mvwprintw(stdscr, infoY, startX, "Score: %d", score);
+    mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time left: %d", remaining);
+    wrefresh(stdscr);
 }
 
 void SnakeGame::setGameSpeed(int speed) {
