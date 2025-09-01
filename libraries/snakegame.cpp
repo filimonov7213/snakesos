@@ -289,7 +289,13 @@ void SnakeGame::updateState() {
 }
 
 void SnakeGame::redraw() {
-    board.drawBorder();
+    if (borderGreen && borderFlashCount > 0) {
+        drawGreenBorder(); // Solo bordo verde
+    } else {
+        board.drawBorder(); // Solo bordo normale
+    }
+
+    //board.drawBorder();
     board.refresh();
     //werase(hud);
     //box(hud, 0, 0);
