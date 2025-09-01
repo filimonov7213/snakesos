@@ -144,12 +144,18 @@ void Game::start() {
                 ch = getch();
                 if (ch == 'q' || ch == 'Q') {
                     last_choice = 1; // quit
+                    clear();
+                    refresh();
                     break;
                 } else if (ch == 'n' && current->next != nullptr) {
                     current = current->next;
+                    clear();
+                    refresh();
                     break;
                 } else if (ch == 'b' && current->prev != nullptr) {
                     current = current->prev;
+                    clear();
+                    refresh();
                     break;
                 }
             }

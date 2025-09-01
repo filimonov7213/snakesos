@@ -11,12 +11,6 @@ SnakeGame::SnakeGame(int height, int width, int timeLimit, int appleFactor)
 
     startTime = time(nullptr);
 
-    // INIZIALIZZA COLORI SE SUPPORTATI
-    if (has_colors()) {
-        init_pair(1, COLOR_WHITE, COLOR_BLACK); // Normale
-        init_pair(2, COLOR_GREEN, COLOR_BLACK); // Verde
-    }
-
     initialize();
 }
 
@@ -222,7 +216,7 @@ void SnakeGame::updateSnakePosition() {
         ateApple = true;
 
         // ATTIVA EFFETTO BORDO VERDE
-        borderFlashCount = 10;
+        borderFlashCount = 3;
         borderGreen = true;
     }
 
@@ -335,7 +329,7 @@ void SnakeGame::drawGreenBorder() {
 
     // USA I COLORI SE SUPPORTATI
     if (has_colors()) {
-        wattron(win, COLOR_PAIR(2)); // Verde
+        wattron(win, COLOR_PAIR(3)); // Verde
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (y == 0 || y == height - 1 || x == 0 || x == width - 1) {
@@ -346,7 +340,7 @@ void SnakeGame::drawGreenBorder() {
                 }
             }
         }
-        wattroff(win, COLOR_PAIR(2));
+        wattroff(win, COLOR_PAIR(3));
     } else {
         // FALLBACK: carattere speciale per bordo verde
         for (int y = 0; y < height; y++) {
