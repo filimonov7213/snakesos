@@ -282,7 +282,7 @@ void SnakeGame::updateState() {
     updateSnakePosition();
 }
 
-void SnakeGame::redraw() {
+void SnakeGame::redraw(int totalScore) {
     if (borderGreen && borderFlashCount > 0) {
         drawGreenBorder(); // Solo bordo verde
     } else {
@@ -315,8 +315,9 @@ void SnakeGame::redraw() {
     int startX = (xMax - board.getWidth()) / 2;
     int infoY = startY + board.getHeight();
 
-    mvwprintw(stdscr, infoY, startX, "Score: %d", score);
-    mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time left: %02d", remaining);
+    mvwprintw(stdscr, infoY, startX, "Level Score: %d", score);
+    mvwprintw(stdscr, infoY, startX + (board.getWidth()/2)-7, "Total Score: %d", totalScore+score);
+    mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time Left: %02d", remaining);
     wrefresh(stdscr);
 }
 

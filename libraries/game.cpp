@@ -100,7 +100,7 @@ void Game::start() {
             //flushinp();
             game.processInput();
             game.updateState();
-            game.redraw();
+            game.redraw(totalScore);
             napms(10);
         }
         //flushinp();

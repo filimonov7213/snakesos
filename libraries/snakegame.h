@@ -12,7 +12,7 @@ public:
     void initialize();
     void processInput();
     void updateState();
-    void redraw();
+    void redraw(int totalScore);
     void setGameSpeed(int speed);
     void forceGameOver();
     bool isOver() const;
