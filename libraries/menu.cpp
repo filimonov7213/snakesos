@@ -1,7 +1,3 @@
-//
-// Created by victor on 17/07/2025.
-//
-
 #include "menu.h"
 #include <curses.h>
 
@@ -11,14 +7,14 @@ Menu::Menu() {
     selectedIndex = 0;
 }
 
-void Menu::display() const{
-  clear();
-  mvprintw(1, 5, "==== MENU ====");
+void Menu::display() const {
+    clear();
+    mvprintw(1, 5, "==== MENU ====");
     for (int i = 0; i < N_OPTIONS; ++i) {
         if (i == selectedIndex) {
             attron(A_REVERSE); // evidenzia
         }
-        mvprintw(3 + i, 5, "%s", options[i].c_str()); // mvprintw vuole un array e c_str manda l'array di char
+        mvprintw(3 + i, 5, "%s", options[i].c_str());
         if (i == selectedIndex) {
             attroff(A_REVERSE);
         }
@@ -28,28 +24,37 @@ void Menu::display() const{
 
 int Menu::show() {
     int choice = -1;
-    while (choice == -1) {   // rimani finché non viene selezionata un'opzione valida
-        display();
+    nodelay(stdscr, FALSE); // Disabilita nodelay per input bloccante
+    timeout(-1); // Input bloccante
+
+    display(); // Mostra il menu una volta
+
+    while (choice == -1) {
         choice = gestisciInput();
     }
+
     return choice;
 }
 
 int Menu::gestisciInput() {
-    int ch = getch(); // prende il carattere che l'utente clicca
+    int ch = getch(); // Blocca finché non c'è input
+
     switch (ch) {
         case KEY_UP:
         case 'w':
         case 'W':
-            selectedIndex = (selectedIndex - 1 + N_OPTIONS) % N_OPTIONS; // trucchetto per scorrere in alto ciclicamente, cioè se sei in cima al menu, torni all’ultima LOOP CIRCOLARE
+            selectedIndex = (selectedIndex - 1 + N_OPTIONS) % N_OPTIONS;
+            display(); // Ridisegna solo quando c'è un cambiamento
         break;
         case KEY_DOWN:
         case 's':
         case 'S':
-            selectedIndex = (selectedIndex + 1) % N_OPTIONS; // trucchetto per scorrere in alto ciclicamente, cioè se sei in cima al menu, torni all’ultima LOOP CIRCOLARE
+            selectedIndex = (selectedIndex + 1) % N_OPTIONS;
+            display(); // Ridisegna solo quando c'è un cambiamento
         break;
-        case '\n': // Invio
+        case '\n':
         case KEY_ENTER:
+        case ' ': // Anche spazio per selezione
             return selectedIndex;
     }
     return -1;

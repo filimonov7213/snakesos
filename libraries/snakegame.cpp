@@ -316,7 +316,7 @@ void SnakeGame::redraw() {
     int infoY = startY + board.getHeight();
 
     mvwprintw(stdscr, infoY, startX, "Score: %d", score);
-    mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time left: %d", remaining);
+    mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time left: %02d", remaining);
     wrefresh(stdscr);
 }
 
