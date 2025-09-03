@@ -1,5 +1,4 @@
 #include "snakegame.h"
-#include "empty.h"
 #include <cstdlib>
 #include <string>
 #include <cstring>
