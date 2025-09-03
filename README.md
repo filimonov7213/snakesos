@@ -1,41 +1,95 @@
-SnakeProject/
-├── sources/
-│   └── main.cpp
-├── libraries/
-│   ├── same.h / game.cpp
-│   ├── snake.h / snake.cpp
-│   ├── grid.h / grid.cpp
-│   ├── livello.h / livello.cpp
-│   └── menu.h / menu.cpp
-├── scoreboard/
-│   └── scoreboard.txt
-├── CMakeLists.txt
-└── README.md
+# 🐍 SnakeGame
 
+Versione testuale del classico gioco **Snake**, sviluppata in **C++** con libreria **ncurses/pdcurses**.  
+Il progetto implementa:
+- livelli multipli con velocità e limiti di tempo,
+- punteggio dinamico basato sulle mele raccolte,
+- wrap-around (il serpente passa da un bordo all’altro),
+- classifica persistente (Top 10).
 
-Funzionalità principali
-Interfaccia testuale (ASCII) usando ncurses
+---
 
-Controllo del serpente tramite tastiera (freccette, wasd)
+## 📦 Requisiti
 
-Gestione multi-livello, con velocità crescente
+### Linux
+Assicurati di avere `ncurses` installato:
+```bash
+sudo apt update
+sudo apt install libncurses-dev
+```
 
-Navigazione tra i livelli con i tasti:
+### Windows
+- Compilazione con MinGW e **PDCurses**.
+- Scarica e includi PDCurses nella cartella `libraries/`.
 
-n → livello successivo
+---
 
-b → livello precedente
+## ⚙️ Compilazione
 
-Menù iniziale per avviare una nuova partita
+### Con CMake
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
 
-Struttura modulare con classi per:
+Su Windows con MinGW:
+```powershell
+cmake -G "MinGW Makefiles" ..
+mingw32-make
+```
 
-Game → motore del gioco
+L’eseguibile sarà `SnakeGame` (o `SnakeGame.exe` su Windows).
 
-Grid → gestione della griglia
+---
 
-Snake → movimento e corpo del serpente
+## 🎮 Come si gioca
 
-Livello → struttura dei livelli (lista doppiamente collegata)
+- **Menu principale**
+    - `Nuova Partita`
+    - `Visualizza Classifica`
 
-(altre classi in futuro)
+- **Comandi di gioco**
+    - `W` o Freccia Su → su
+    - `S` o Freccia Giù → giù
+    - `A` o Freccia Sinistra → sinistra
+    - `D` o Freccia Destra → destra
+    - `P` → pausa
+
+- **Regole**
+    - Mangia le mele (`@`) per guadagnare punti.
+    - Non urtare te stesso → game over.
+    - Puoi attraversare i bordi (wrap-around).
+    - Ogni livello ha un **tempo limite**. Scaduto → game over.
+
+- **Post-partita**
+    - `n` → livello successivo
+    - `b` → livello precedente
+    - `q` → ritorna al menu
+
+---
+
+## 🏆 Classifica
+
+- I punteggi vengono salvati in un file di testo (`scores.txt`).
+- Solo i **Top 10** vengono mantenuti.
+- Alla fine di ogni partita viene richiesto il nome del giocatore.
+
+---
+
+## 📂 Struttura del progetto
+
+- `libraries/`
+    - `Board.*` → gestione griglia di gioco e bordi
+    - `Snake.*` → logica serpente (matrice booleana + array segmenti)
+    - `Apple.*` → mela
+    - `Drawable.*` → classe astratta, rappresenta un oggetto disegnabile sullo schermo.
+    - `SnakeGame.*` → ciclo principale di gioco
+    - `Livello.*` → definizione livelli (dimensioni, velocità, tempo limite, moltiplicatore punti)
+    - `Game.*` → gestione della lista di livelli e progressione
+    - `Menu.*` → interfaccia menu principale
+    - `Leaderboard.*` → classifica e salvataggio punteggi
+- `source/main.cpp` → entry point
+- `CMakeLists.txt` → configurazione build
+
