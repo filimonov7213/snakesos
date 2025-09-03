@@ -10,6 +10,7 @@ public:
 
 private:
     void askPlayerName(); // nuovo metodo per chiedere il nome
+    void displayLevelCompleteScreen(Livello* current, int levelScore, int totalScore, bool isFinalLevel);
 
     Livello* head;   // primo livello
     Livello* tail;   // ultimo livello

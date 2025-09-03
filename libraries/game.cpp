@@ -20,10 +20,73 @@ Game::Game() : playerName("") {
     tail = lvl3;
 }
 
+void Game::displayLevelCompleteScreen(Livello* current, int levelScore, int totalScore, bool isFinalLevel) {
+    clear();
+
+    // Ottieni le dimensioni dello schermo
+    int yMax, xMax;
+    getmaxyx(stdscr, yMax, xMax);
+
+    // Calcola la posizione di partenza per centrare il contenuto
+    int startY = (yMax - 15) / 2;
+    int startX = (xMax - 50) / 2;
+
+    // Colori e attributi
+    attron(A_BOLD);
+
+    // Titolo
+    mvprintw(startY, startX, "==================================================");
+    mvprintw(startY + 1, startX, "                FINE LIVELLO                 ");
+    mvprintw(startY + 2, startX, "==================================================");
+
+    // Informazioni livello
+    attroff(A_BOLD);
+    mvprintw(startY + 4, startX, "Livello completato: %s", current->getName().c_str());
+    mvprintw(startY + 5, startX, "Punteggio livello: %d", levelScore);
+    mvprintw(startY + 6, startX, "Punteggio totale: %d", totalScore);
+
+    // Linea separatrice
+    attron(A_BOLD);
+    mvprintw(startY + 8, startX, "--------------------------------------------------");
+    attroff(A_BOLD);
+
+    int currentLine = startY + 10; // Inizia dalle opzioni
+
+    if (isFinalLevel) {
+        // Messaggio per livello finale
+        mvprintw(currentLine, startX, "Hai completato tutti i livelli!");
+        currentLine++;
+        mvprintw(currentLine, startX, "Punteggio finale: %d", totalScore);
+        currentLine += 2; // Salta una riga
+        mvprintw(currentLine, startX, "Premi un tasto per vedere la classifica...");
+        currentLine++;
+    } else {
+        // Opzioni per livelli intermedi
+        mvprintw(currentLine, startX, "Premi 'N' - Prossimo livello");
+        currentLine++;
+
+        // Mostra "Livello precedente" solo se non siamo al primo livello
+        if (current != head) {
+            mvprintw(currentLine, startX, "Premi 'B' - Livello precedente");
+            currentLine++;
+        }
+
+        mvprintw(currentLine, startX, "Premi 'Q' - Esci e vedi classifica");
+        currentLine++;
+    }
+
+    // Cornice inferiore - posizionata dinamicamente
+    attron(A_BOLD);
+    mvprintw(currentLine + 1, startX, "==================================================");
+    attroff(A_BOLD);
+
+    refresh();
+}
+
 void Game::askPlayerName() {
     clear();
-    timeout(-1); // Disabilita timeout per input bloccante
-    noecho();    //  DISABILITA ECHO - lo gestiamo manualmente
+    timeout(-1);
+    noecho();
     curs_set(1);
 
     // Messaggio di input
@@ -34,11 +97,10 @@ void Game::askPlayerName() {
     int ch;
     int pos = 0;
 
-    // Usa una riga dedicata sotto il messaggio per l'input
-    mvprintw(11, 10, "> "); // Prompt di input
+    mvprintw(11, 10, "> ");
     refresh();
 
-    int input_x = 12; // Inizia dopo "> "
+    int input_x = 12;
 
     while (pos < 49) {
         ch = getch();
@@ -48,12 +110,12 @@ void Game::askPlayerName() {
         } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
             if (pos > 0) {
                 pos--;
-                mvprintw(11, input_x + pos, " "); // Cancella il carattere
+                mvprintw(11, input_x + pos, " ");
                 refresh();
             }
-        } else if (isprint(ch)) { // Carattere stampabile
+        } else if (isprint(ch)) {
             name[pos] = ch;
-            mvprintw(11, input_x + pos, "%c", ch); //  Stampa manualmente
+            mvprintw(11, input_x + pos, "%c", ch);
             pos++;
             refresh();
         }
@@ -62,7 +124,6 @@ void Game::askPlayerName() {
     name[pos] = '\0';
     playerName = name;
 
-    // Messaggio di conferma
     if (!playerName.empty()) {
         mvprintw(13, 10, "Benvenuto, %s!", playerName.c_str());
     } else {
@@ -75,21 +136,20 @@ void Game::askPlayerName() {
     getch();
 
     curs_set(0);
-    timeout(0); // Ripristina timeout normale
+    timeout(0);
 
     clear();
     refresh();
 }
 
 void Game::start() {
-
     def_prog_mode();
     askPlayerName();
 
     Livello* current = head;
     int totalScore = 0;
     bool game_over = false;
-    int last_choice = 0; // 0 = continua, 1 = quit
+    int last_choice = 0;
 
     while (!game_over && current) {
         SnakeGame game(current->getHeight(), current->getWidth(),
@@ -97,45 +157,31 @@ void Game::start() {
         game.setGameSpeed(current->getSpeed());
 
         while (!game.isOver()) {
-            //flushinp();
             game.processInput();
             game.updateState();
             game.redraw(totalScore);
             napms(10);
         }
-        //flushinp();
 
         int levelScore = game.getScore();
         totalScore += levelScore;
         current->addScore(levelScore);
 
-        clear();
-        mvprintw(10, 10, "Game Over su %s", current->getName().c_str());
-        mvprintw(11, 10, "Punteggio livello: %d", levelScore);
-        mvprintw(12, 10, "Punteggio totale: %d", totalScore);
+        // USA IL NUOVO METODO
+        bool isFinalLevel = (current == tail);
+        displayLevelCompleteScreen(current, levelScore, totalScore, isFinalLevel);
 
-        if (current == tail) {
-            mvprintw(14, 10, "Hai completato tutti i livelli!");
-            mvprintw(15, 10, "Punteggio finale: %d", totalScore);
-            mvprintw(17, 10, "Premi un tasto per vedere la classifica...");
-            refresh();
-
-            //flushinp();
+        if (isFinalLevel) {
             timeout(-1);
             getch();
             timeout(0);
 
             Leaderboard leaderboard("../scoreboard/scoreboard.txt");
-            leaderboard.addScore(playerName, totalScore); // Aggiungi anche se 0
+            leaderboard.addScore(playerName, totalScore);
             leaderboard.show();
 
             game_over = true;
         } else {
-            mvprintw(14, 10, "Premi 'n' (next) per livello successivo");
-            mvprintw(15, 10, "Premi 'b' (back) per livello precedente");
-            mvprintw(16, 10, "Premi 'q' per uscire e vedere la classifica"); // Modificato messaggio
-            refresh();
-
             int ch;
             timeout(-1);
             noecho();
@@ -143,19 +189,14 @@ void Game::start() {
             while (true) {
                 ch = getch();
                 if (ch == 'q' || ch == 'Q') {
-                    last_choice = 1; // quit
-                    clear();
-                    refresh();
+                    last_choice = 1;
                     break;
-                } else if (ch == 'n' && current->next != nullptr) {
+                } else if (ch == 'n' || ch == 'N') {
                     current = current->next;
-                    clear();
-                    refresh();
                     break;
-                } else if (ch == 'b' && current->prev != nullptr) {
+                } else if ((ch == 'b' || ch == 'B') && current != head) {
+                    // Permetti di tornare indietro solo se non siamo al primo livello
                     current = current->prev;
-                    clear();
-                    refresh();
                     break;
                 }
             }
@@ -175,17 +216,21 @@ void Game::start() {
         leaderboard.addScore(playerName, totalScore);
 
         clear();
-        if (totalScore > 0) {
-            mvprintw(10, 10, "Hai abbandonato la partita");
-            mvprintw(11, 10, "Punteggio finale: %d", totalScore);
-        } else {
-            mvprintw(10, 10, "Hai abbandonato la partita");
-            mvprintw(11, 10, "Punteggio finale: 0");
-        }
-        mvprintw(13, 10, "Premi un tasto per vedere la classifica...");
+        int yMax, xMax;
+        getmaxyx(stdscr, yMax, xMax);
+        int startY = (yMax - 10) / 2;
+        int startX = (xMax - 50) / 2;
+
+        attron(A_BOLD);
+        mvprintw(startY, startX, "==================================================");
+        mvprintw(startY + 1, startX, "            PARTITA INTERROTTA               ");
+        mvprintw(startY + 2, startX, "==================================================");
+        attroff(A_BOLD);
+
+        mvprintw(startY + 4, startX, "Punteggio finale: %d", totalScore);
+        mvprintw(startY + 6, startX, "Premi un tasto per vedere la classifica...");
         refresh();
 
-        //flushinp();
         timeout(-1);
         getch();
         timeout(0);
