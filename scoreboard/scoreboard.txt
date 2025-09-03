@@ -1,8 +1,4 @@
 Player 91
-Player 82
-Player 54
-Player 25
-Player 17
 Player 14
 Player 1
 ddddddd 0
