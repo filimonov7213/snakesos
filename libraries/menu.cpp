@@ -9,16 +9,32 @@ Menu::Menu() {
 
 void Menu::display() const {
     clear();
-    mvprintw(1, 5, "==== MENU ====");
+
+    int row, col;
+    getmaxyx(stdscr, row, col); // dimensioni del terminale
+
+    // Titolo centrato orizzontalmente, un po' sopra al menu
+    std::string titolo = "==== MENU ====";
+    mvprintw((row / 2) - (N_OPTIONS / 2) - 2, (col - titolo.length()) / 2, "%s", titolo.c_str());
+
+    // Calcolo posizione verticale per centrare le opzioni
+    int startY = (row - N_OPTIONS) / 2;
+
     for (int i = 0; i < N_OPTIONS; ++i) {
+        int x = (col - options[i].length()) / 2; // centrato in X
+        int y = startY + i;                      // centrato in Y
+
         if (i == selectedIndex) {
-            attron(A_REVERSE); // evidenzia
+            attron(A_REVERSE);
         }
-        mvprintw(3 + i, 5, "%s", options[i].c_str());
+
+        mvprintw(y, x, "%s", options[i].c_str());
+
         if (i == selectedIndex) {
             attroff(A_REVERSE);
         }
     }
+
     refresh();
 }
 

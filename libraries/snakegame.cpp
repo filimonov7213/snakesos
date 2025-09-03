@@ -29,13 +29,6 @@ void SnakeGame::initialize() {
     pausedTime = 0;
     paused = false;
 
-    // CREA HUD CON CONTROLLO
-    hud = newwin(4, 30, 0, board.getWidth() + 2);
-    if (!hud) {
-        game_over = true;
-        return;
-    }
-
     // INIZIALIZZA SNAKE CON CONTROLLO
     snake.initialize(board.getHeight() / 2, board.getWidth() / 2,
                     board.getHeight(), board.getWidth());
@@ -299,10 +292,7 @@ void SnakeGame::redraw(int totalScore) {
         board.drawBorder(); // Solo bordo normale
     }
 
-    //board.drawBorder();
     board.refresh();
-    //werase(hud);
-    //box(hud, 0, 0);
 
     if (borderGreen && borderFlashCount > 0) {
         drawGreenBorder(); // Bordo verde
@@ -313,22 +303,32 @@ void SnakeGame::redraw(int totalScore) {
     int elapsed = static_cast<int>(time(nullptr) - startTime - pausedTime);
     int remaining = timeLimit - elapsed;
 
-    // stampa punteggio e tempo rimanente in alto
-    //mvwprintw(hud, 1, 1, "Score: %d", score);
-    //mvwprintw(hud, 2, 1, "Time left: %02d", remaining);
-    //wrefresh(hud);
-
-    //prova printing sotto la board principale
+    // Stampa score e Time left sotto la board
     int xMax, yMax;
     getmaxyx(stdscr, yMax, xMax);
     int startY = (yMax - board.getHeight()) / 2;
     int startX = (xMax - board.getWidth()) / 2;
     int infoY = startY + board.getHeight();
 
-    mvwprintw(stdscr, infoY, startX, "Level Score: %d", score);
+    mvwprintw(stdscr, infoY, startX, "Score: ");
+    if (borderGreen) {
+        wattron(stdscr, COLOR_PAIR(6));
+        wprintw(stdscr, "%d", score);
+        wattroff(stdscr, COLOR_PAIR(6));
+    } else {
+        wprintw(stdscr, "%d", score);  // bianco normale
+    }
+
     mvwprintw(stdscr, infoY, startX + (board.getWidth()/2)-7, "Total Score: %d", totalScore+score);
-    mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time Left: %02d", remaining);
+    if (remaining <= 3) {
+        wattron(stdscr, COLOR_PAIR(2));
+        mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time Left: %02d", remaining);
+        wattroff(stdscr, COLOR_PAIR(2));
+    } else
+        mvwprintw(stdscr, infoY, startX + board.getWidth() - 14, "Time Left: %02d", remaining);
+
     wrefresh(stdscr);
+
 }
 
 void SnakeGame::drawGreenBorder() {
