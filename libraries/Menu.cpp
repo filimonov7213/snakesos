@@ -1,4 +1,4 @@
-#include "menu.h"
+#include "Menu.h"
 #include <curses.h>
 
 Menu::Menu() {

@@ -1,4 +1,4 @@
-#include "snakegame.h"
+#include "Snakegame.h"
 #include <cstdlib>
 #include <string>
 #include <cstring>

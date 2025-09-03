@@ -1,6 +1,6 @@
 #pragma once
 #include "livello.h"
-#include "snakegame.h"
+#include "Snakegame.h"
 #include <string>
 
 class Game {

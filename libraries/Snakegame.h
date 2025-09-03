@@ -1,7 +1,7 @@
 #pragma once
-#include "board.h"
+#include "Board.h"
 #include "Snake.h"
-#include "apple.h"
+#include "Apple.h"
 #include <ctime>
 
 class SnakeGame {

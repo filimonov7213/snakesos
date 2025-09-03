@@ -1,6 +1,6 @@
 #pragma once
 #include <curses.h>
-#include "drawable.h"
+#include "Drawable.h"
 
 class Apple : public Drawable {
 public:

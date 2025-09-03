@@ -110,7 +110,7 @@ bool Snake::move() {
         return false; // collisione con il corpo
     }
 
-    // 👇 Rimuovi la coda dall'occupazione SOLO DOPO aver controllato
+    // Rimuovi la coda dall'occupazione SOLO DOPO aver controllato
     int tailY = segY[FIXED_LENGTH - 1];
     int tailX = segX[FIXED_LENGTH - 1];
     if (tailY >= 0 && tailY < fieldH && tailX >= 0 && tailX < fieldW) {

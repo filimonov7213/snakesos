@@ -1,5 +1,5 @@
-#include "board.h"
-#include "snakegame.h"
+#include "Board.h"
+#include "Snakegame.h"
 #include <cstdlib>
 #include <ctime>
 

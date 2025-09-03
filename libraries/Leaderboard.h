@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <vector>
 
 struct ScoreEntry {
     std::string name;
@@ -17,5 +16,6 @@ public:
 
 private:
     std::string file;
-    std::vector<ScoreEntry> scores;
+    ScoreEntry scores[10]; // Array fisso di 10 elementi
+    int scoreCount;        // Numero effettivo di punteggi
 };

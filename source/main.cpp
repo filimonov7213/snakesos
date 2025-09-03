@@ -1,6 +1,6 @@
-/*#include "../libraries/board.h"
-#include "../libraries/snakegame.h"
-#include "../libraries/drawable.h"
+/*#include "../libraries/Board.h"
+#include "../libraries/Snakegame.h"
+#include "../libraries/Drawable.h"
 
 int main() {
   // todo: roba di curses

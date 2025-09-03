@@ -1,6 +1,6 @@
-#include "game.h"
+#include "Game.h"
 #include <curses.h>
-#include "leaderboard.h"
+#include "Leaderboard.h"
 #include <string>
 #include <iostream>
 
@@ -35,9 +35,19 @@ void Game::displayLevelCompleteScreen(Livello* current, int levelScore, int tota
     attron(A_BOLD);
 
     // Titolo
-    mvprintw(startY, startX, "==================================================");
-    mvprintw(startY + 1, startX, "                FINE LIVELLO                 ");
-    mvprintw(startY + 2, startX, "==================================================");
+    // Calcola le posizioni centrate
+    std::string line1 = "==================================================";
+    std::string line2 = "                 FINE LIVELLO                 ";
+    std::string line3 = "==================================================";
+
+    int startX1 = (xMax - line1.length()) / 2;
+    int startX2 = (xMax - line2.length()) / 2;
+    int startX3 = (xMax - line3.length()) / 2;
+
+    // Stampa le linee centrate
+    mvprintw(startY, startX1, "%s", line1.c_str());
+    mvprintw(startY + 1, startX2, "%s", line2.c_str());
+    mvprintw(startY + 2, startX3, "%s", line3.c_str());
 
     // Informazioni livello
     attroff(A_BOLD);

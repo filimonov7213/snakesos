@@ -1,7 +1,3 @@
-//
-// Created by victor on 17/07/2025.
-//
-
 #ifndef MENU_H
 #define MENU_H
 
