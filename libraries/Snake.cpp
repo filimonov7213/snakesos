@@ -137,11 +137,6 @@ bool Snake::move() {
     return true;
 }
 
-
-
-
-
-
 bool Snake::isAt(int y, int x) const {
     if (!occ) return false;
     if (y < 0 || y >= fieldH || x < 0 || x >= fieldW) return false;

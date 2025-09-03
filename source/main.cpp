@@ -35,9 +35,9 @@ int main() {
 }*/
 //ciao
 #include <curses.h>
-#include "menu.h"
-#include "game.h"
-#include "leaderboard.h"
+#include "Menu.h"
+#include "Game.h"
+#include "Leaderboard.h"
 #include <iostream>
 
 void cleanupNcurses() {
