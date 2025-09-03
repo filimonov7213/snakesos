@@ -1,15 +1,15 @@
-# 🐍 SnakeGame
+# SnakeGame
 
 Versione testuale del classico gioco **Snake**, sviluppata in **C++** con libreria **ncurses/pdcurses**.  
 Il progetto implementa:
 - livelli multipli con velocità e limiti di tempo,
 - punteggio dinamico basato sulle mele raccolte,
-- wrap-around (il serpente passa da un bordo all’altro),
-- classifica persistente (Top 10).
+- il serpente passa da un bordo all’altro,
+- classifica (Top 10).
 
 ---
 
-## 📦 Requisiti
+## Requisiti
 
 ### Linux
 Assicurati di avere `ncurses` installato:
@@ -24,7 +24,7 @@ sudo apt install libncurses-dev
 
 ---
 
-## ⚙️ Compilazione
+## Compilazione
 
 ### Con CMake
 ```bash
@@ -44,7 +44,7 @@ L’eseguibile sarà `SnakeGame` (o `SnakeGame.exe` su Windows).
 
 ---
 
-## 🎮 Come si gioca
+## Come si gioca
 
 - **Menu principale**
     - `Nuova Partita`
@@ -59,8 +59,8 @@ L’eseguibile sarà `SnakeGame` (o `SnakeGame.exe` su Windows).
 
 - **Regole**
     - Mangia le mele (`@`) per guadagnare punti.
-    - Non urtare te stesso → game over.
-    - Puoi attraversare i bordi (wrap-around).
+    - Se il serpente si morde la coda da solo → game over.
+    - Puoi attraversare i bordi.
     - Ogni livello ha un **tempo limite**. Scaduto → game over.
 
 - **Post-partita**
@@ -70,7 +70,7 @@ L’eseguibile sarà `SnakeGame` (o `SnakeGame.exe` su Windows).
 
 ---
 
-## 🏆 Classifica
+## Classifica
 
 - I punteggi vengono salvati in un file di testo (`scores.txt`).
 - Solo i **Top 10** vengono mantenuti.
@@ -78,7 +78,7 @@ L’eseguibile sarà `SnakeGame` (o `SnakeGame.exe` su Windows).
 
 ---
 
-## 📂 Struttura del progetto
+## Struttura del progetto
 
 - `libraries/`
     - `Board.*` → gestione griglia di gioco e bordi
