@@ -21,11 +21,14 @@ SnakeGame::~SnakeGame() {
 void SnakeGame::initialize() {
     destroyApple();
 
-    // 👇 INIZIALIZZA BOARD CON CONTROLLO
+    // INIZIALIZZA BOARD CON CONTROLLO
     board.initialize();
 
     game_over = false;
     tickCount = 0;
+
+    pausedTime = 0;
+    paused = false;
 
     // CREA HUD CON CONTROLLO
     hud = newwin(4, 30, 0, board.getWidth() + 2);
@@ -109,6 +112,8 @@ void SnakeGame::processInput() {
 }
 
 void SnakeGame::showPauseMenu() {
+    paused = true;
+    pauseStart = time(nullptr);
     // Salva lo stato corrente del timeout
     board.setTimeout(-1);
     //flushinp();
@@ -179,6 +184,9 @@ void SnakeGame::showPauseMenu() {
                 refresh();
                 //flushinp();
                 board.setTimeout(currentSpeed);
+                paused = false;
+                pausedTime += static_cast<int>(time(nullptr) - pauseStart);
+                board.setTimeout(currentSpeed);
                 if (highlight == 1) forceGameOver();
                 return;
             case 'p': case 'P': case 27: // P o ESC per riprendere
@@ -187,6 +195,9 @@ void SnakeGame::showPauseMenu() {
                 touchwin(stdscr);
                 refresh();
                 //flushinp();
+                board.setTimeout(currentSpeed);
+                paused = false;
+                pausedTime += static_cast<int>(time(nullptr) - pauseStart);
                 board.setTimeout(currentSpeed);
                 return;
         }
@@ -271,7 +282,7 @@ void SnakeGame::updateState() {
 
     // tempo in secondi
     //int elapsed = (tickCount * currentSpeed) / 1000;
-    int elapsed = static_cast<int>(time(nullptr) - startTime);
+    int elapsed = static_cast<int>(time(nullptr) - startTime - pausedTime);
     int remaining = timeLimit - elapsed;
 
     if (remaining <= 0) {
@@ -300,7 +311,7 @@ void SnakeGame::redraw(int totalScore) {
         board.drawBorder(); // Bordo normale
     }
 
-    int elapsed = static_cast<int>(time(nullptr) - startTime);
+    int elapsed = static_cast<int>(time(nullptr) - startTime - pausedTime);
     int remaining = timeLimit - elapsed;
 
     // stampa punteggio e tempo rimanente in alto

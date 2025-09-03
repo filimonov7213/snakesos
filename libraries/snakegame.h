@@ -38,6 +38,9 @@ private:
     int score;          // punteggio corrente
     bool game_over;
     int borderFlashCount;  // Contatore per l'effetto flash
+    int pausedTime;       // tempo totale passato in pausa
+    time_t pauseStart;    // quando la pausa è iniziata
+    bool paused;
     bool borderGreen;      // Stato del bordo verde
     time_t startTime;   // tempo dallo start
 
