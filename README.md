@@ -91,5 +91,6 @@ L’eseguibile sarà `SnakeGame` (o `SnakeGame.exe` su Windows).
     - `Menu.*` → interfaccia menu principale
     - `Leaderboard.*` → classifica e salvataggio punteggi
 - `source/main.cpp` → entry point
+- `scoreboard/scoreboard.txt` → classifica
 - `CMakeLists.txt` → configurazione build
 
